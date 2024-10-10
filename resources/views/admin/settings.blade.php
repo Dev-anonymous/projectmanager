@@ -68,7 +68,7 @@
                                 <div class="mt-3">
                                     <div class="custom-toggle-switch d-flex align-items-center mb-4">
                                         <input id="toggleswitchSuccess00" name="bsms" type="checkbox"
-                                            @if (getconfig('sms' == 'yes')) checked @endif>
+                                            @if (getconfig('sms') == 'yes') checked @endif>
                                         <label for="toggleswitchSuccess00" class="label-success"></label><span
                                             class="ms-3">Envoyer un SMS au chauffeur à chaque transaction</span>
                                     </div>
