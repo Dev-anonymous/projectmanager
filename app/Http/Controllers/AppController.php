@@ -303,7 +303,6 @@ class AppController extends Controller
 
         try {
             $rep = iinit($phone, $montant, $devise, $ref);
-            dd($rep);
         } catch (\Throwable $th) {
             throw $th;
         }
