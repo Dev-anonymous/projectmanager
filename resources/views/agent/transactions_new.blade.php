@@ -48,10 +48,10 @@
                                         <form action="#" id="fpay">
                                             <div class="form-group mb-2">
                                                 <label for="signin-username"
-                                                    class="form-label text-default">Chauffeur</label>
+                                                    class="form-label text-default">Client</label>
                                                 <select name="users_id" id="" class="form-control select2"
                                                     required>
-                                                    <option value="">Choisir un chauffeur</option>
+                                                    <option value="">Choisir un client</option>
                                                     @foreach ($chauffeurs as $el)
                                                         <option value="{{ $el->id }}">
                                                             {{ $el->name }}###{{ $el->code }}###{{ $el->phone }}

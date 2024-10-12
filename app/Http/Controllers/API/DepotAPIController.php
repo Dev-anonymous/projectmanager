@@ -32,7 +32,7 @@ class DepotAPIController extends Controller
 
         if ('admin' == $user_role) {
             //
-        } else if ('driver' == $user_role) {
+        } else if ('user' == $user_role) {
             $profil = auth()->user()->profils()->first();
             $cash = $cash->where('profil_id', $profil->id);
             $illico_cash = $illico_cash->where('profil_id', $profil->id);
@@ -92,7 +92,7 @@ class DepotAPIController extends Controller
         $t = Depot::whereDate('date', '>=', $dfrom)->whereDate('date', '<=', $dto)->orderBy('id', 'DESC');
         if ('admin' == $user_role) {
             //
-        } else if ('driver' == $user_role) {
+        } else if ('user' == $user_role) {
             $profil = auth()->user()->profils()->first();
             $t = $t->where('profil_id', $profil->id);
         } else if ('agent' == $user_role) {
@@ -144,7 +144,7 @@ class DepotAPIController extends Controller
             $tab['mobile_money']  = $mobile_money;
         }
 
-        if ('driver' == $user_role) {
+        if ('user' == $user_role) {
             $profil = auth()->user()->profils()->first();
             $tab['solde_usd']  = v($profil->solde_usd, 'USD');
             $tab['solde_cdf']  = v($profil->solde_cdf, 'CDF');

@@ -17,6 +17,7 @@ use Laravel\Sanctum\HasApiTokens;
  *
  * @property int $id
  * @property int|null $users_id
+ * @property int|null $categorie_id
  * @property string $name
  * @property string $email
  * @property Carbon|null $email_verified_at
@@ -29,6 +30,7 @@ use Laravel\Sanctum\HasApiTokens;
  * @property string|null $image
  * @property string|null $code
  *
+ * @property Categorie|null $categorie
  * @property User|null $user
  * @property Collection|Depot[] $depots
  * @property Collection|Exportation[] $exportations
@@ -45,6 +47,7 @@ class User extends Authenticatable
 
     protected $casts = [
         'users_id' => 'int',
+        'categorie_id' => 'int',
         'email_verified_at' => 'datetime'
     ];
 
@@ -55,6 +58,7 @@ class User extends Authenticatable
 
     protected $fillable = [
         'users_id',
+        'categorie_id',
         'name',
         'email',
         'email_verified_at',
@@ -65,6 +69,11 @@ class User extends Authenticatable
         'image',
         'code'
     ];
+
+    public function categorie()
+    {
+        return $this->belongsTo(Categorie::class);
+    }
 
     public function user()
     {

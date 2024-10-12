@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Categorie;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -30,14 +31,15 @@ class AgentController extends Controller
         return view('agent.transactions');
     }
 
-    function drivers()
+    function users()
     {
-        return view('agent.drivers');
+        $categories = Categorie::orderBy('categorie')->get();
+        return view('agent.users', compact('categories'));
     }
     function transactions_new()
     {
-        $chauffeurs = User::where('user_role', 'driver')->orderBy('name')->get();
-        $img = User::where('user_role', 'driver')->orderBy('name')->get();
+        $chauffeurs = User::where('user_role', 'user')->orderBy('name')->get();
+        $img = User::where('user_role', 'user')->orderBy('name')->get();
         $t = [];
 
         foreach ($img as $el) {

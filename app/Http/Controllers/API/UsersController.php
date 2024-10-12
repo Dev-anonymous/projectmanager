@@ -25,7 +25,7 @@ class UsersController extends Controller
         if ('admin' == $role) {
             $type = request('type');
             $t = User::orderBy('name')->where('user_role', $type)->get();
-            if ($type == 'driver') {
+            if ($type == 'user') {
                 foreach ($t as $el) {
                     $o = (object)$el->toArray();
                     $pro = $el->profils()->first();
@@ -37,6 +37,7 @@ class UsersController extends Controller
                         $o->pieceidentite = asset('storage/' . $pro->pieceidentite);
                     }
                     $o->image = userimage($el);
+                    $o->categorie = $el->categorie->categorie;
                     $data[] = $o;
                 }
             } else {
@@ -48,7 +49,7 @@ class UsersController extends Controller
             }
         }
         if ('agent' == $role) {
-            $type = 'driver';
+            $type = 'user';
             $t = User::orderBy('name')->where(['user_role' => $type, 'users_id' => auth()->user()->id])->get();
             foreach ($t as $el) {
                 $o = (object)$el->toArray();
@@ -59,6 +60,7 @@ class UsersController extends Controller
                     $o->pieceidentite = asset('storage/' . $pro->pieceidentite);
                 }
                 $o->image = userimage($el);
+                $o->categorie = $el->categorie->categorie;
                 $data[] = $o;
             }
         }
@@ -78,7 +80,7 @@ class UsersController extends Controller
     {
         $user_role = request('user_role');
         $rules =  [
-            'user_role' => 'required|in:admin,agent,driver',
+            'user_role' => 'required|in:admin,agent,user',
             'name' => 'required',
             'email' => 'required|email|unique:users',
             'password' => 'required',
@@ -86,7 +88,8 @@ class UsersController extends Controller
             'phone' => 'required|max:10,min:10',
         ];
 
-        if ('driver' == $user_role) {
+        if ('user' == $user_role) {
+            $rules['categorie_id'] = 'required|exists:categorie,id';
             $rules['adresse'] = 'required';
             $rules['image'] = 'required|mimes:jpeg,jpg,png|max:500';
             $rules['pieceidentite'] = 'required|mimes:jpeg,jpg,png|max:500';
@@ -120,7 +123,7 @@ class UsersController extends Controller
         $data['users_id'] = auth()->user()->id;
         $user = User::create($data);
 
-        if ('driver' == $user_role) {
+        if ('user' == $user_role) {
             $data['pieceidentite'] = request()->file('pieceidentite')->store('image', 'public');
             $data['users_id'] = $user->id;
             Profil::create($data);
@@ -162,7 +165,7 @@ class UsersController extends Controller
             'phone' => 'required|max:10,min:10||unique:users,phone,' . $user->id,
         ];
 
-        if ('driver' == $user_role) {
+        if ('user' == $user_role) {
             $rules['adresse'] = 'required';
             $rules['pieceidentite'] = 'sometimes|mimes:jpeg,jpg,png|max:500';
             $rules['typepiece'] = 'required|in:' . implode(',', typepiece());
@@ -197,7 +200,7 @@ class UsersController extends Controller
         $data['name'] = ucfirst($data['name']);
         DB::beginTransaction();
         $user->update($data);
-        if ('driver' == $user_role) {
+        if ('user' == $user_role) {
             $profil = $user->profils()->first();
             if ($request->hasFile('pieceidentite')) {
                 File::delete('storage/' . $profil->pieceidentite);
@@ -223,7 +226,7 @@ class UsersController extends Controller
                 'message' => 'Veuillez demander à un autre administrateur de supprimer votre compte'
             ];
         }
-        if ('driver' == $user->user_role) {
+        if ('user' == $user->user_role) {
             $profil = $user->profils()->first();
             if ($profil->solde_usd or $profil->solde_cdf) {
                 return [

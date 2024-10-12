@@ -57,6 +57,6 @@ class Exportation extends Model
 	public function profils()
 	{
 		return $this->belongsToMany(Profil::class, 'exportation_has_profil')
-					->withPivot('montant', 'devise');
+					->withPivot('montant_cdf', 'montant_usd');
 	}
 }

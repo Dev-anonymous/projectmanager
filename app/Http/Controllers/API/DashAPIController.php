@@ -20,7 +20,7 @@ class DashAPIController extends Controller
         $user = auth()->user();
 
         if ('admin' == $user->user_role) {
-            $nbchauffeurs  = User::where('user_role', 'driver')->count();
+            $nbchauffeurs  = User::where('user_role', 'user')->count();
             $nbagents  = User::where('user_role', 'agent')->count();
             $nbadmins  = User::where('user_role', 'admin')->count();
 
@@ -47,7 +47,7 @@ class DashAPIController extends Controller
             //
         } else if ('agent' == $user->user_role) {
             $recenttrans = $recenttrans->where('users_id', $user->id);
-        } elseif ('driver' == $user->user_role) {
+        } elseif ('user' == $user->user_role) {
             $profil = $user->profils()->first();
             $recenttrans = $recenttrans->where('profil_id', $profil->id);
         } else {
@@ -148,7 +148,7 @@ class DashAPIController extends Controller
 
             if ('admin' == $user->user_role) {
                 //
-            } elseif ('driver' == $user->user_role) {
+            } elseif ('user' == $user->user_role) {
                 $profil = $user->profils()->first();
                 $cash2 = $cash2->where('profil_id', $profil->id);
                 $illico_cash2 = $illico_cash2->where('profil_id', $profil->id);
@@ -215,7 +215,7 @@ class DashAPIController extends Controller
             $data['mobile_money'] = $mobile_money;
         }
 
-        if ('driver' == $user->user_role) {
+        if ('user' == $user->user_role) {
             $profil = auth()->user()->profils()->first();
             $data['solde_usd']  = v($profil->solde_usd, 'USD');
             $data['solde_cdf']  = v($profil->solde_cdf, 'CDF');

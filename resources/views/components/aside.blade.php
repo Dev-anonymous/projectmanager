@@ -51,7 +51,7 @@
                         </ul>
                     </li>
                     <li class="slide__category"><span class="category-name">Users</span></li>
-                    <li class="slide has-sub @if (Route::is('admin.admins') or Route::is('admin.agents') or Route::is('admin.drivers')) active open @endif">
+                    <li class="slide has-sub @if (Route::is('admin.admins') or Route::is('admin.agents') or Route::is('admin.users')) active open @endif">
                         <a href="javascript:void(0);" class="side-menu__item">
                             <i class="bx bxs-user-detail side-menu__icon"></i>
                             <span class="side-menu__label">Utilisateurs </span>
@@ -70,13 +70,13 @@
                                     class="side-menu__item @if (Route::is('admin.agents')) active @endif">Agents</a>
                             </li>
                             <li class="slide">
-                                <a href="{{ route('admin.drivers') }}"
-                                    class="side-menu__item @if (Route::is('admin.drivers')) active @endif">Chauffeurs</a>
+                                <a href="{{ route('admin.users') }}"
+                                    class="side-menu__item @if (Route::is('admin.users')) active @endif">Clients</a>
                             </li>
                         </ul>
                     </li>
                     <li class="slide__category"><span class="category-name">Settings</span></li>
-                    <li class="slide has-sub @if (Route::is('admin.settings') or Route::is('admin.profile')) active open @endif">
+                    <li class="slide has-sub @if (Route::is('admin.settings') or Route::is('admin.profile') or Route::is('admin.category')) active open @endif">
                         <a href="javascript:void(0);" class="side-menu__item">
                             <i class="bx bxs-cog side-menu__icon"></i>
                             <span class="side-menu__label">Paramètres</span>
@@ -91,6 +91,10 @@
                                     class="side-menu__item @if (Route::is('admin.settings')) active @endif">Paramètres</a>
                             </li>
                             <li class="slide">
+                                <a href="{{ route('admin.category') }}"
+                                    class="side-menu__item @if (Route::is('admin.category')) active @endif">Categories</a>
+                            </li>
+                            <li class="slide">
                                 <a href="{{ route('admin.profile') }}"
                                     class="side-menu__item @if (Route::is('admin.profile')) active @endif">Profil</a>
                             </li>
@@ -98,10 +102,10 @@
                     </li>
                 @endif
 
-                @if ('driver' == $role)
-                    <li class="slide has-sub @if (Route::is('driver.home') or Route::is('driver.transactions')) active open @endif">
+                @if ('user' == $role)
+                    <li class="slide has-sub @if (Route::is('user.home') or Route::is('user.transactions')) active open @endif">
                         <a href="javascript:void(0);"
-                            class="side-menu__item @if (Route::is('driver.home')) active @endif">
+                            class="side-menu__item @if (Route::is('user.home')) active @endif">
                             <i class="bx bx-home side-menu__icon"></i>
                             <span class="side-menu__label">Dashboards </span>
                             <i class="fe fe-chevron-right side-menu__angle"></i>
@@ -111,17 +115,17 @@
                                 <a href="javascript:void(0)">Dashboards</a>
                             </li>
                             <li class="slide">
-                                <a href="{{ route('driver.home') }}"
-                                    class="side-menu__item @if (Route::is('driver.home')) active @endif">Dashboard</a>
+                                <a href="{{ route('user.home') }}"
+                                    class="side-menu__item @if (Route::is('user.home')) active @endif">Dashboard</a>
                             </li>
                             <li class="slide">
-                                <a href="{{ route('driver.transactions') }}"
-                                    class="side-menu__item @if (Route::is('driver.transactions')) active @endif">Transactions</a>
+                                <a href="{{ route('user.transactions') }}"
+                                    class="side-menu__item @if (Route::is('user.transactions')) active @endif">Transactions</a>
                             </li>
                         </ul>
                     </li>
                     <li class="slide__category"><span class="category-name">Settings</span></li>
-                    <li class="slide has-sub @if (Route::is('driver.settings') or Route::is('driver.profile')) active open @endif">
+                    <li class="slide has-sub @if (Route::is('user.settings') or Route::is('user.profile')) active open @endif">
                         <a href="javascript:void(0);" class="side-menu__item">
                             <i class="bx bxs-cog side-menu__icon"></i>
                             <span class="side-menu__label">Paramètres</span>
@@ -129,8 +133,8 @@
                         </a>
                         <ul class="slide-menu child1">
                             <li class="slide">
-                                <a href="{{ route('driver.profile') }}"
-                                    class="side-menu__item @if (Route::is('driver.profile')) active @endif">Profil</a>
+                                <a href="{{ route('user.profile') }}"
+                                    class="side-menu__item @if (Route::is('user.profile')) active @endif">Profil</a>
                             </li>
                         </ul>
                     </li>
@@ -164,19 +168,19 @@
                         </ul>
                     </li>
                     <li class="slide__category"><span class="category-name">Users</span></li>
-                    <li class="slide has-sub @if (Route::is('admin.drivers')) active open @endif">
+                    <li class="slide has-sub @if (Route::is('admin.users')) active open @endif">
                         <a href="javascript:void(0);" class="side-menu__item">
                             <i class="bx bxs-user-detail side-menu__icon"></i>
-                            <span class="side-menu__label">Chauffeurs </span>
+                            <span class="side-menu__label">Clients </span>
                             <i class="fe fe-chevron-right side-menu__angle"></i>
                         </a>
                         <ul class="slide-menu child1">
                             <li class="slide side-menu__label1">
-                                <a href="javascript:void(0)">Chauffeurs</a>
+                                <a href="javascript:void(0)">Clients</a>
                             </li>
                             <li class="slide">
-                                <a href="{{ route('agent.drivers') }}"
-                                    class="side-menu__item @if (Route::is('agent.drivers')) active @endif">Chauffeurs</a>
+                                <a href="{{ route('agent.users') }}"
+                                    class="side-menu__item @if (Route::is('agent.users')) active @endif">Clients</a>
                             </li>
                         </ul>
                     </li>

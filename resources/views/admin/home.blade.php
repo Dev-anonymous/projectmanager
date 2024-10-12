@@ -173,11 +173,11 @@
                                         </div>
                                         <div class="row row-cols-12 border-top border-block-start-dashed">
                                             <div class="col p-0">
-                                                <a href="{{ route('admin.drivers') }}">
+                                                <a href="{{ route('admin.users') }}">
                                                     <div
                                                         class="ps-4 py-3 pe-3 text-center border-end border-inline-end-dashed">
                                                         <span
-                                                            class="text-muted fs-12 mb-1 crm-lead-legend mobile d-inline-block">Chauffeurs
+                                                            class="text-muted fs-12 mb-1 crm-lead-legend mobile d-inline-block">Clients
                                                         </span>
                                                         <div>
                                                             <span class="fs-16 fw-semibold" nbchauffeurs></span>
@@ -219,7 +219,7 @@
                         <div class="card custom-card">
                             <div class="card-header justify-content-between">
                                 <div class="card-title">
-                                    Top Chauffeurs
+                                    Top clients
                                 </div>
                             </div>
                             <div class="card-body">
@@ -227,7 +227,7 @@
                                     <table class="table text-nowrap table-hover" table>
                                         <thead>
                                             <tr>
-                                                <th scope="col">Chauffeur</th>
+                                                <th scope="col">Client</th>
                                                 <th scope="col">Email</th>
                                                 <th scope="col">Tel</th>
                                                 <th scope="col">Solde USD</th>
@@ -241,7 +241,7 @@
                             <div class="card-footer">
                                 <div class="d-flex align-items-center">
                                     <div>
-                                        <a href="{{ route('admin.drivers') }}">
+                                        <a href="{{ route('admin.users') }}">
                                             Tout voir <i class="bi bi-arrow-right ms-2 fw-semibold"></i>
                                         </a>
                                     </div>
@@ -378,7 +378,7 @@
                     height: 290,
                     type: "pie",
                 },
-                labels: ["Chauffeurs", "Agents", "Admins"],
+                labels: ["Clients", "Agents", "Admins"],
                 theme: {
                     monochrome: {
                         enabled: true,

@@ -3,6 +3,7 @@ define('BASEF', 'https://backend.flexpay.cd/api/rest/v1');
 define('FTKN', 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJcL2xvZ2luIiwicm9sZXMiOlsiTUVSQ0hBTlQiXSwiZXhwIjoxNzgxMTcyNzUzLCJzdWIiOiJiOWE4MDM3ZTEyM2YyMzY0OTNiODkxOGU1N2IyNmY1ZiJ9.r8cFNhWM1AC9_pt8usfuJlzaFMvGDvxNde0ZNfU2X0Q');
 define('COMMISSION', 3.5 / 100);
 
+use App\Models\Categorie;
 use App\Models\Config;
 use App\Models\Depot;
 use App\Models\Pending;
@@ -54,6 +55,13 @@ function defaultdata()
     if (!$u) {
         User::create(['name' => 'Admin', 'email' => 'admin@admin.admin', 'user_role' => 'admin', 'password' => Hash::make('admin@2024')]);
     }
+
+    $cat = Categorie::first();
+    if (!$cat) {
+        foreach (['Personnel', 'Chauffeur', 'Marchand'] as $el) {
+            Categorie::create(['categorie' => $el]);
+        }
+    }
 }
 
 function remotetaux()
@@ -94,7 +102,7 @@ function userid($user)
     foreach ($tab as $e) {
         $n .= substr($e, 0, 1);
     }
-    $t =  User::where('user_role', 'driver')->count() + 1;
+    $t =  User::where('user_role', 'user')->count() + 1;
     if ($t <= 9) {
         $t = "00$t";
     } else if ($t >= 10 && $t <= 99) {

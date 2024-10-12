@@ -14,8 +14,8 @@ Route::get('/', function () {
         $url = '';
         if ($role == 'admin') {
             $url = route('admin.home');
-        } elseif ($role == 'driver') {
-            $url = route('driver.home');
+        } elseif ($role == 'user') {
+            $url = route('user.home');
         } elseif ($role == 'agent') {
             $url = route('agent.home');
         } else {
@@ -44,17 +44,19 @@ Route::middleware('auth')->group(function () {
             Route::get('export',  'export')->name('admin.export');
             Route::get('admins',  'admins')->name('admin.admins');
             Route::get('agents',  'agents')->name('admin.agents');
-            Route::get('drivers',  'drivers')->name('admin.drivers');
+            Route::get('users',  'users')->name('admin.users');
+            Route::get('category',  'category')->name('admin.category');
             Route::get('settings',  'settings')->name('admin.settings');
             Route::get('profile',  'profile')->name('admin.profile');
+            Route::any('export/excel',  'excel')->name('admin.excel');
         });
     });
 
-    Route::prefix('driver')->group(function () {
+    Route::prefix('user')->group(function () {
         Route::controller(DriverController::class)->group(function () {
-            Route::get('',  'home')->name('driver.home');
-            Route::get('transactions',  'transactions')->name('driver.transactions');
-            Route::get('profile',  'profile')->name('driver.profile');
+            Route::get('',  'home')->name('user.home');
+            Route::get('transactions',  'transactions')->name('user.transactions');
+            Route::get('profile',  'profile')->name('user.profile');
         });
     });
 
@@ -64,7 +66,7 @@ Route::middleware('auth')->group(function () {
             Route::get('transactions',  'transactions')->name('agent.transactions');
             Route::get('transactions/new',  'transactions_new')->name('agent.transactions-new');
             Route::get('profile',  'profile')->name('agent.profile');
-            Route::get('drivers',  'drivers')->name('agent.drivers');
+            Route::get('users',  'users')->name('agent.users');
         });
     });
 });

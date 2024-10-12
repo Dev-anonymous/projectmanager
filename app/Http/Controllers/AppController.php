@@ -73,7 +73,7 @@ class AppController extends Controller
 
         $chauffeur = User::find($users_id);
         $profil = $chauffeur->profils()->first();
-        abort_if($chauffeur->user_role != 'driver', 403);
+        abort_if($chauffeur->user_role != 'user', 403);
 
         $mcdf = change($montant, $devise, 'CDF');
         $musd = change($montant, $devise, 'USD');
@@ -158,7 +158,7 @@ class AppController extends Controller
 
         $chauffeur = User::find(request('users_id'));
         $profil = $chauffeur->profils()->first();
-        abort_if($chauffeur->user_role != 'driver', 403);
+        abort_if($chauffeur->user_role != 'user', 403);
         $ref = transid($chauffeur);
         $mcdf = change($amount, $devise, 'CDF');
         $musd = change($amount, $devise, 'USD');
@@ -277,7 +277,7 @@ class AppController extends Controller
 
         $chauffeur = User::find(request('users_id'));
         $profil = $chauffeur->profils()->first();
-        abort_if($chauffeur->user_role != 'driver', 403);
+        abort_if($chauffeur->user_role != 'user', 403);
 
         $ref = transid($chauffeur);
 
@@ -384,7 +384,7 @@ class AppController extends Controller
         $devise = request('devise');
         $chauffeur = User::find(request('users_id'));
         $profil = $chauffeur->profils()->first();
-        abort_if($chauffeur->user_role != 'driver', 403);
+        abort_if($chauffeur->user_role != 'user', 403);
         $ref = transid($chauffeur);
         $mcdf = change($montant, $devise, 'CDF');
         $musd = change($montant, $devise, 'USD');

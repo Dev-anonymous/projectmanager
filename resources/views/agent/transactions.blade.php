@@ -57,7 +57,7 @@
                                         <thead>
                                             <tr>
                                                 <th style="width:5px!important"><span ldr></span></th>
-                                                <th>Chauffeur</th>
+                                                <th>Client</th>
                                                 <th>Montant</th>
                                                 <th>Date</th>
                                             </tr>

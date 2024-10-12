@@ -52,8 +52,8 @@
                 if ($user->user_role == 'agent') {
                     $href = route('agent.profile');
                 }
-                if ($user->user_role == 'driver') {
-                    $href = route('driver.profile');
+                if ($user->user_role == 'user') {
+                    $href = route('user.profile');
                 }
             @endphp
             <div class="header-element">

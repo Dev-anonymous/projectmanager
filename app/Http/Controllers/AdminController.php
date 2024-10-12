@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Categorie;
+use App\Models\Exportation;
 use App\Models\Invoice;
 use App\Models\InvoicePay;
 use App\Models\Support;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Shuchkin\SimpleXLSXGen;
 
 class AdminController extends Controller
 {
@@ -33,9 +36,10 @@ class AdminController extends Controller
         return view('admin.agents');
     }
 
-    function drivers()
+    function users()
     {
-        return view('admin.drivers');
+        $categories = Categorie::orderBy('categorie')->get();
+        return view('admin.users', compact('categories'));
     }
 
     function settings()
@@ -52,9 +56,51 @@ class AdminController extends Controller
         return view('admin.transactions');
     }
 
+    function category()
+    {
+        return view('admin.category');
+    }
+
     function export()
     {
-        $users = User::where('user_role', 'driver')->orderBy('name')->get();
+        $users = User::where('user_role', 'user')->orderBy('name')->whereHas('profils', function ($q) {
+            $q->where('solde_cdf', '>', 0);
+            $q->orWhere('solde_usd', '>', 0);
+        })->get();
         return view('admin.export', compact('users'));
+    }
+
+    function excel()
+    {
+        $idxport = request('el');
+        $export = Exportation::findOrFail($idxport);
+
+        $data = [
+            ['TO_MOBILE_NUMBER', 'AMOUNT', 'CURRENCY'],
+        ];
+        foreach ($export->profils()->with('user')->get() as $el) {
+            $o = (object) [];
+            $cdf = $el->pivot->montant_cdf;
+            $usd = $el->pivot->montant_usd;
+            $phone = $el->user->phone;
+
+            if ($usd) {
+                $line = [];
+                $line[] = $phone;
+                $line[] = $usd;
+                $line[] = 'USD';
+                $data[] = $line;
+            }
+
+            if ($cdf) {
+                $line = [];
+                $line[] = $phone;
+                $line[] = $cdf;
+                $line[] = 'CDF';
+                $data[] = $line;
+            }
+        }
+        $name = "Exportation_$export->id\_{$export->date?->format('d-m-Y')}";
+        SimpleXLSXGen::fromArray($data)->downloadAs("$name.xlsx");
     }
 }

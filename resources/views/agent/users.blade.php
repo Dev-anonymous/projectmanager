@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title> Chauffeurs | {{ config('app.name') }} </title>
+    <title> Clients | {{ config('app.name') }} </title>
     <x-css-file />
 </head>
 
@@ -19,12 +19,12 @@
         <div class="main-content app-content">
             <div class="container-fluid">
                 <div class="d-md-flex d-block align-items-center justify-content-between my-4 page-header-breadcrumb">
-                    <h1 class="page-title fw-semibold fs-18 mb-0">Chauffeurs</h1>
+                    <h1 class="page-title fw-semibold fs-18 mb-0">Clients</h1>
                     <div class="ms-md-1 ms-0">
                         <nav>
                             <ol class="breadcrumb mb-0">
                                 <li class="breadcrumb-item"><a href="javascript:void(0);">Dashboards</a></li>
-                                <li class="breadcrumb-item active" aria-current="page">Chauffeurs</li>
+                                <li class="breadcrumb-item active" aria-current="page">Clients</li>
                             </ol>
                         </nav>
                     </div>
@@ -33,7 +33,7 @@
                     <div class="col-xl-12 mb-2">
                         <div class="card custom-card">
                             <div class="card-header d-flex justify-content-between">
-                                <div class="card-title">Comptes Chauffeurs</div>
+                                <div class="card-title">Comptes Clients</div>
 
                                 <div class="m-2">
                                     <button
@@ -52,6 +52,7 @@
                                                 <th style="width:5px!important"><span ldr></span></th>
                                                 <th></th>
                                                 <th>Nom</th>
+                                                <th>Catégorie</th>
                                                 <th>Tel.</th>
                                                 <th>Email</th>
                                                 <th>Adresse</th>
@@ -73,12 +74,20 @@
             <div class="modal-dialog  text-center" role="document">
                 <div class="modal-content modal-content-demo">
                     <div class="modal-header">
-                        <h6 class="modal-title">Nouveau chauffeur </h6><button aria-label="Close" class="btn-close"
+                        <h6 class="modal-title">Nouveau client </h6><button aria-label="Close" class="btn-close"
                             data-bs-dismiss="modal"></button>
                     </div>
                     <form action="#" id="f-add">
                         <div class="modal-body text-start">
-                            <input type="hidden" name="user_role" value="driver">
+                            <input type="hidden" name="user_role" value="user">
+                            <div class="col-xl-12 mb-2">
+                                <label class="form-label text-default">Catégorie</label>
+                                <select name="categorie_id" id="" class="form-control" required="required">
+                                    @foreach ($categories as $el)
+                                        <option value="{{ $el->id }}">{{ $el->categorie }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
                             <div class="col-xl-12 mb-2">
                                 <label class="form-label text-default">Nom</label>
                                 <input required type="text" name="name" class="form-control form-control-sm"
@@ -251,7 +260,7 @@
             function getdata() {
                 $('span[ldr]').removeClass().addClass('bx bx-spin bx-loader bx-sm');
                 $.ajax({
-                    'url': '{{ route('users.index', ['type' => 'driver']) }}',
+                    'url': '{{ route('users.index', ['type' => 'user']) }}',
                     success: function(res) {
                         table.DataTable().destroy();
                         var html = '';
@@ -261,6 +270,7 @@
                             <td>${i+1}</td>
                             <td><img src="${user.image}" alt="img" width="32" height="32" class="rounded-circle"></td>
                             <td>${user.name}<br><i>${user.code??''}</i></td>
+                            <td>${user.categorie}</td>
                             <td>${user.phone??'-'}</td>
                             <td>${user.email??'-'}</td>
                             <td>${user.adresse??'-'}</td>
