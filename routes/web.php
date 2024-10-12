@@ -41,6 +41,7 @@ Route::middleware('auth')->group(function () {
         Route::controller(AdminController::class)->group(function () {
             Route::get('',  'home')->name('admin.home');
             Route::get('transactions',  'transactions')->name('admin.transactions');
+            Route::get('export',  'export')->name('admin.export');
             Route::get('admins',  'admins')->name('admin.admins');
             Route::get('agents',  'agents')->name('admin.agents');
             Route::get('drivers',  'drivers')->name('admin.drivers');
@@ -63,6 +64,7 @@ Route::middleware('auth')->group(function () {
             Route::get('transactions',  'transactions')->name('agent.transactions');
             Route::get('transactions/new',  'transactions_new')->name('agent.transactions-new');
             Route::get('profile',  'profile')->name('agent.profile');
+            Route::get('drivers',  'drivers')->name('agent.drivers');
         });
     });
 });
@@ -70,7 +72,7 @@ Route::middleware('auth')->group(function () {
 Route::any('checkout', function () {
     abort_if(!auth()->check(), 401);
     abort_if(auth()->user()->user_role != 'agent', 403);
-    
+
     $pd = Pay::where('ref', request('ref'))->first();
     if (!$pd or @$pd->saved == 1) {
         return redirect(route('agent.transactions'));

@@ -6,6 +6,7 @@ use App\Http\Controllers\API\DepotAPIController;
 use App\Http\Controllers\API\TauxAPIController;
 use App\Http\Controllers\API\UsersController;
 use App\Http\Controllers\AppController;
+use App\Http\Controllers\ExportAPIController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -27,6 +28,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('depot', DepotAPIController::class)->only(['index']);
     Route::resource('dash', DashAPIController::class)->only(['index']);
     Route::resource('config', ConfigAPIController::class)->only(['store']);
+    Route::resource('export', ExportAPIController::class)->only(['index', 'store', 'destroy']);
 
     Route::post('cpa', [AppController::class, 'cpa'])->name('cpa');
     Route::post('fpi', [AppController::class, 'fpi'])->name('fpi');

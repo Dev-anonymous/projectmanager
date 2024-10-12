@@ -36,17 +36,30 @@ class UsersController extends Controller
                         $o->typepiece = $pro->typepiece;
                         $o->pieceidentite = asset('storage/' . $pro->pieceidentite);
                     }
-                    $img = $el->image;
-                    if ($img) {
-                        $img =   asset('storage/' . $img);
-                    } else {
-                        $img =   asset('/assets/images/faces/9.jpg');
-                    }
-                    $o->image = $img;
+                    $o->image = userimage($el);
                     $data[] = $o;
                 }
             } else {
-                $data = $t;
+                foreach ($t as $el) {
+                    $o = (object)$el->toArray();
+                    $o->image = userimage($el);
+                    $data[] = $o;
+                }
+            }
+        }
+        if ('agent' == $role) {
+            $type = 'driver';
+            $t = User::orderBy('name')->where(['user_role' => $type, 'users_id' => auth()->user()->id])->get();
+            foreach ($t as $el) {
+                $o = (object)$el->toArray();
+                $pro = $el->profils()->first();
+                if ($pro) {
+                    $o->adresse = $pro->adresse;
+                    $o->typepiece = $pro->typepiece;
+                    $o->pieceidentite = asset('storage/' . $pro->pieceidentite);
+                }
+                $o->image = userimage($el);
+                $data[] = $o;
             }
         }
         return [
@@ -97,8 +110,6 @@ class UsersController extends Controller
         $data  = $validator->validated();
 
         DB::beginTransaction();
-
-
         if ($request->hasFile('image')) {
             $data['image'] = request()->file('image')->store('image', 'public');
         }
@@ -106,6 +117,7 @@ class UsersController extends Controller
         $data['password'] = Hash::make($data['password']);
         $data['name'] = ucfirst($data['name']);
         $data['code'] = userid($data['name']);
+        $data['users_id'] = auth()->user()->id;
         $user = User::create($data);
 
         if ('driver' == $user_role) {
@@ -138,8 +150,10 @@ class UsersController extends Controller
      */
     public function update(Request $request, User $user)
     {
-        $user_role = $user->user_role;
+        $u = auth()->user();
+        abort_if('agent' == $u->user_role and $user->users_id != $u->id, 403);
 
+        $user_role = $user->user_role;
         $rules =  [
             'name' => 'required',
             'email' => 'required|unique:users,email,' . $user->id,

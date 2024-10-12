@@ -239,15 +239,9 @@
                         table.DataTable().destroy();
                         var html = '';
                         res.data.forEach((user, i) => {
-                            var img = user.image;
-                            if (img) {
-                                img = '{{ asset('storage') }}/' + img;
-                            } else {
-                                img = '{{ asset('/assets/images/faces/9.jpg') }}';
-                            }
                             html += `<tr>
                             <td>${i+1}</td>
-                            <td><img src="${img}" alt="img" width="32" height="32" class="rounded-circle"></td>
+                            <td><img src="${user.image}" alt="img" width="32" height="32" class="rounded-circle"></td>
                             <td>${user.name}</td>
                             <td>${user.phone??'-'}</td>
                             <td>${user.email??'-'}</td>

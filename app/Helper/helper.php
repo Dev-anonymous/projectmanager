@@ -578,7 +578,6 @@ function setconfig($name, $value)
 
 function sms($to = '', $msg = '')
 {
-
     if (empty($to) or empty($msg)) {
         return false;
     }
@@ -676,4 +675,16 @@ function orangeSms($to = '', $msg = '')
     }
     curl_close($curl);
     return $rep;
+}
+
+
+function userimage(User $user)
+{
+    $img = $user->image;
+    if ($img) {
+        $img =   asset('storage/' . $img);
+    } else {
+        $img =   asset('/assets/images/faces/9.jpg');
+    }
+    return $img;
 }

@@ -47,12 +47,7 @@
                                             <div class="accordion-body">
                                                 @php
                                                     $user = auth()->user();
-                                                    $img = $user->image;
-                                                    if ($img) {
-                                                        $img = asset('storage/' . $img);
-                                                    } else {
-                                                        $img = asset('/assets/images/faces/9.jpg');
-                                                    }
+                                                    $img = userimage($user);
                                                 @endphp
                                                 <div class="card custom-card">
                                                     <a href="javascript:void(0);" class="card-anchor"></a>

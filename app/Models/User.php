@@ -16,6 +16,7 @@ use Laravel\Sanctum\HasApiTokens;
  * Class User
  *
  * @property int $id
+ * @property int|null $users_id
  * @property string $name
  * @property string $email
  * @property Carbon|null $email_verified_at
@@ -28,8 +29,11 @@ use Laravel\Sanctum\HasApiTokens;
  * @property string|null $image
  * @property string|null $code
  *
+ * @property User|null $user
  * @property Collection|Depot[] $depots
+ * @property Collection|Exportation[] $exportations
  * @property Collection|Profil[] $profils
+ * @property Collection|User[] $users
  *
  * @package App\Models
  */
@@ -40,6 +44,7 @@ class User extends Authenticatable
     protected $table = 'users';
 
     protected $casts = [
+        'users_id' => 'int',
         'email_verified_at' => 'datetime'
     ];
 
@@ -49,6 +54,7 @@ class User extends Authenticatable
     ];
 
     protected $fillable = [
+        'users_id',
         'name',
         'email',
         'email_verified_at',
@@ -60,13 +66,28 @@ class User extends Authenticatable
         'code'
     ];
 
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'users_id');
+    }
+
     public function depots()
     {
         return $this->hasMany(Depot::class, 'users_id');
     }
 
+    public function exportations()
+    {
+        return $this->hasMany(Exportation::class, 'users_id');
+    }
+
     public function profils()
     {
         return $this->hasMany(Profil::class, 'users_id');
+    }
+
+    public function users()
+    {
+        return $this->hasMany(User::class, 'users_id');
     }
 }

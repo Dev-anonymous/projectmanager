@@ -113,13 +113,7 @@ class DepotAPIController extends Controller
             $u->email = $el->profil->user->email;
             $u->code = $el->profil->user->code;
 
-            $img = $el->profil->user->image;
-            if ($img) {
-                $img =   asset('storage/' . $img);
-            } else {
-                $img =   asset('/assets/images/faces/9.jpg');
-            }
-            $u->image = $img;
+            $u->image = userimage($el->profil->user);
 
             $o->user = $u;
 

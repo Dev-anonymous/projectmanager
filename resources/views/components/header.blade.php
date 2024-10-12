@@ -44,12 +44,7 @@
             </div>
             @php
                 $user = auth()->user();
-                $img = $user->image;
-                if ($img) {
-                    $img = asset('storage/' . $img);
-                } else {
-                    $img = asset('/assets/images/faces/9.jpg');
-                }
+                $img = userimage($user);
                 $href = '';
                 if ($user->user_role == 'admin') {
                     $href = route('admin.profile');

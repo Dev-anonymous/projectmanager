@@ -51,4 +51,10 @@ class AdminController extends Controller
     {
         return view('admin.transactions');
     }
+
+    function export()
+    {
+        $users = User::where('user_role', 'driver')->orderBy('name')->get();
+        return view('admin.export', compact('users'));
+    }
 }

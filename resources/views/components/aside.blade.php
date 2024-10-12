@@ -24,7 +24,7 @@
 
                 @endphp
                 @if ('admin' == $role)
-                    <li class="slide has-sub @if (Route::is('admin.home') or Route::is('admin.transactions')) active open @endif">
+                    <li class="slide has-sub @if (Route::is('admin.home') or Route::is('admin.transactions') or Route::is('admin.export')) active open @endif">
                         <a href="javascript:void(0);"
                             class="side-menu__item @if (Route::is('admin.home')) active @endif">
                             <i class="bx bx-home side-menu__icon"></i>
@@ -42,6 +42,11 @@
                             <li class="slide">
                                 <a href="{{ route('admin.transactions') }}"
                                     class="side-menu__item @if (Route::is('admin.transactions')) active @endif">Transactions</a>
+                            </li>
+                            <li class="slide">
+                                <a href="{{ route('admin.export') }}"
+                                    class="side-menu__item @if (Route::is('admin.export')) active @endif">Envoi
+                                    fonds</a>
                             </li>
                         </ul>
                     </li>
@@ -155,6 +160,23 @@
                                 <a href="{{ route('agent.transactions-new') }}"
                                     class="side-menu__item @if (Route::is('agent.transactions-new')) active @endif">Nouvelle
                                     Transaction</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="slide__category"><span class="category-name">Users</span></li>
+                    <li class="slide has-sub @if (Route::is('admin.drivers')) active open @endif">
+                        <a href="javascript:void(0);" class="side-menu__item">
+                            <i class="bx bxs-user-detail side-menu__icon"></i>
+                            <span class="side-menu__label">Chauffeurs </span>
+                            <i class="fe fe-chevron-right side-menu__angle"></i>
+                        </a>
+                        <ul class="slide-menu child1">
+                            <li class="slide side-menu__label1">
+                                <a href="javascript:void(0)">Chauffeurs</a>
+                            </li>
+                            <li class="slide">
+                                <a href="{{ route('agent.drivers') }}"
+                                    class="side-menu__item @if (Route::is('agent.drivers')) active @endif">Chauffeurs</a>
                             </li>
                         </ul>
                     </li>

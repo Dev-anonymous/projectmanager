@@ -29,6 +29,11 @@ class AgentController extends Controller
     {
         return view('agent.transactions');
     }
+
+    function drivers()
+    {
+        return view('agent.drivers');
+    }
     function transactions_new()
     {
         $chauffeurs = User::where('user_role', 'driver')->orderBy('name')->get();
@@ -36,13 +41,7 @@ class AgentController extends Controller
         $t = [];
 
         foreach ($img as $el) {
-            $i = $el->image;
-            if ($i) {
-                $i =   asset('storage/' . $i);
-            } else {
-                $i =   asset('/assets/images/faces/9.jpg');
-            }
-            $t[$el->id] = $i;
+            $t[$el->id] = userimage($el);
         }
         $img = json_encode($t);
         return view('agent.transactions_new', compact('chauffeurs', 'img'));

@@ -30,13 +30,7 @@ class DashAPIController extends Controller
             foreach ($topdrivers as $el) {
                 $o = (object)[];
 
-                $img = $el->user->image;
-                if ($img) {
-                    $img =   asset('storage/' . $img);
-                } else {
-                    $img =   asset('/assets/images/faces/9.jpg');
-                }
-                $o->image = $img;
+                $o->image = userimage($el->user);
                 $o->name = $el->user->name;
                 $o->email = $el->user->email;
                 $o->phone = $el->user->phone;
@@ -71,13 +65,7 @@ class DashAPIController extends Controller
             $u->phone = $el->profil->user->phone;
             $u->email = $el->profil->user->email;
 
-            $img = $el->profil->user->image;
-            if ($img) {
-                $img =   asset('storage/' . $img);
-            } else {
-                $img =   asset('/assets/images/faces/9.jpg');
-            }
-            $u->image = $img;
+            $u->image = userimage($el->profil->user);
 
             $o->user = $u;
 
