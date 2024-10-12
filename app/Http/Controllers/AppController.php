@@ -305,7 +305,7 @@ class AppController extends Controller
             $rep = iinit($phone, $montant, $devise, $ref);
             dd($rep);
         } catch (\Throwable $th) {
-            //throw $th;
+            throw $th;
         }
 
         $resp['success'] = $ok = @$rep->respcode === '00';
