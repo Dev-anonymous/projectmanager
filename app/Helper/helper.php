@@ -306,19 +306,19 @@ function iinit($tel, $montant, $devise, $invoiceid)
     // );
     // $url = 'https://new.rawbankillico.com:4004/RAWAPIGateway/ecommerce/payment';
 
-    // $data = '{
-    //     "mobilenumber": "' . $tel . '",
-    //     "trancurrency":"' . $devise . '",
-    //     "amounttransaction": "' . $montant . '",
-    //     "merchantid": "merch0000000000000201",
-    //     "invoiceid":"' . $invoiceid . '",
-    //     "terminalid":"' . $tid . '",
-    //     "encryptkey": "AX8dsXSKqWlJqRhpnCeFJ03CzqMsCisQVUNSymXKqeiaQdHf8eQSyITvCD6u3CLZJBebnxj5LbdosC/4OvUtNbAUbaIgBKMC5MpXGRXZdfAlGsVRfHTmjaGDe1RIiHKP",
-    //     "securityparams":{
-    //         "gpslatitude": "24.864190",
-    //         "gpslongitude": "67.090420"
-    //     }
-    // }';
+    $data = '{
+        "mobilenumber": "' . $tel . '",
+        "trancurrency":"' . $devise . '",
+        "amounttransaction": "' . $montant . '",
+        "merchantid": "merch0000000000000201",
+        "invoiceid":"' . $invoiceid . '",
+        "terminalid":"' . $tid . '",
+        "encryptkey": "AX8dsXSKqWlJqRhpnCeFJ03CzqMsCisQVUNSymXKqeiaQdHf8eQSyITvCD6u3CLZJBebnxj5LbdosC/4OvUtNbAUbaIgBKMC5MpXGRXZdfAlGsVRfHTmjaGDe1RIiHKP",
+        "securityparams":{
+            "gpslatitude": "24.864190",
+            "gpslongitude": "67.090420"
+        }
+    }';
 
     // try {
     //     $request = new GuzzleHttp\Psr7\Request('POST', $url);
@@ -366,19 +366,7 @@ function iinit($tel, $montant, $devise, $invoiceid)
         CURLOPT_FOLLOWLOCATION => true,
         CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
         CURLOPT_CUSTOMREQUEST => 'POST',
-        CURLOPT_POSTFIELDS => '{
-        "mobilenumber": "00243993093010",
-        "trancurrency":"USD",
-        "amounttransaction": "1",
-        "merchantid": "merch0000000000000201",
-        "invoiceid":"0887953453453",
-        "terminalid":"832987839423",
-        "encryptkey": "AX8dsXSKqWlJqRhpnCeFJ03CzqMsCisQVUNSymXKqeiaQdHf8eQSyITvCD6u3CLZJBebnxj5LbdosC/4OvUtNbAUbaIgBKMC5MpXGRXZdfAlGsVRfHTmjaGDe1RIiHKP",
-        "securityparams":{
-            "gpslatitude": "24.864190",
-            "gpslongitude": "67.090420"
-        }
-    }',
+        CURLOPT_POSTFIELDS => $data,
         CURLOPT_HTTPHEADER => array(
             'LogInName: fc46eb53f793b886f9fd4905d3cefe6c15385c9a49a5edc08079ee695e3bd222',
             'LoginPass: d2d74e274526b085ee5a4aa4baebdec0c60620003a126fb7b7fe6fae64b25453',
