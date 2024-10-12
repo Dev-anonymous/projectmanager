@@ -291,34 +291,110 @@ function iinit($tel, $montant, $devise, $invoiceid)
     $client = new \GuzzleHttp\Client();
     $tid = time() . rand(1, 1000000000);
 
-    $headers = array(
-        'LogInName' => 'fc46eb53f793b886f9fd4905d3cefe6c15385c9a49a5edc08079ee695e3bd222',
-        'Content-Type' => 'application/json',
-        'LoginPass' => 'd2d74e274526b085ee5a4aa4baebdec0c60620003a126fb7b7fe6fae64b25453',
-        'Authorization' => 'Basic MzdjMTM1YWJlMWIxOGFhNDJmNDY0NzVkNDA5NzkzNmQzNTk0YzFjYzQxMDZkZGNlNGZlODM3MzgwNjE3Y2RjZToyZGI0ZjRiYTQzYTUyMzAxOTEyMTJhYjgzOWNiYTY5ZmJiOTNmM2Q0NmUwZjQwNjM3M2M1MjMyZDZjNmUzM2I1'
-    );
-    $url = 'https://new.rawbankillico.com:4004/RAWAPIGateway/ecommerce/payment';
+    // $headers = array(
+    //     'LogInName' => 'fc46eb53f793b886f9fd4905d3cefe6c15385c9a49a5edc08079ee695e3bd222',
+    //     'Content-Type' => 'application/json',
+    //     'LoginPass' => 'd2d74e274526b085ee5a4aa4baebdec0c60620003a126fb7b7fe6fae64b25453',
+    //     'Authorization' => 'Basic MzdjMTM1YWJlMWIxOGFhNDJmNDY0NzVkNDA5NzkzNmQzNTk0YzFjYzQxMDZkZGNlNGZlODM3MzgwNjE3Y2RjZToyZGI0ZjRiYTQzYTUyMzAxOTEyMTJhYjgzOWNiYTY5ZmJiOTNmM2Q0NmUwZjQwNjM3M2M1MjMyZDZjNmUzM2I1'
+    // );
 
-    $data = '{
-        "mobilenumber": "' . $tel . '",
-        "trancurrency":"' . $devise . '",
-        "amounttransaction": "' . $montant . '",
+    // $headers = array(
+    //     'LogInName fc46eb53f793b886f9fd4905d3cefe6c15385c9a49a5edc08079ee695e3bd222',
+    //     'Content-Type application/json',
+    //     'LoginPass d2d74e274526b085ee5a4aa4baebdec0c60620003a126fb7b7fe6fae64b25453',
+    //     'Authorization Basic MzdjMTM1YWJlMWIxOGFhNDJmNDY0NzVkNDA5NzkzNmQzNTk0YzFjYzQxMDZkZGNlNGZlODM3MzgwNjE3Y2RjZToyZGI0ZjRiYTQzYTUyMzAxOTEyMTJhYjgzOWNiYTY5ZmJiOTNmM2Q0NmUwZjQwNjM3M2M1MjMyZDZjNmUzM2I1'
+    // );
+    // $url = 'https://new.rawbankillico.com:4004/RAWAPIGateway/ecommerce/payment';
+
+    // $data = '{
+    //     "mobilenumber": "' . $tel . '",
+    //     "trancurrency":"' . $devise . '",
+    //     "amounttransaction": "' . $montant . '",
+    //     "merchantid": "merch0000000000000201",
+    //     "invoiceid":"' . $invoiceid . '",
+    //     "terminalid":"' . $tid . '",
+    //     "encryptkey": "AX8dsXSKqWlJqRhpnCeFJ03CzqMsCisQVUNSymXKqeiaQdHf8eQSyITvCD6u3CLZJBebnxj5LbdosC/4OvUtNbAUbaIgBKMC5MpXGRXZdfAlGsVRfHTmjaGDe1RIiHKP",
+    //     "securityparams":{
+    //         "gpslatitude": "24.864190",
+    //         "gpslongitude": "67.090420"
+    //     }
+    // }';
+
+    // try {
+    //     $request = new GuzzleHttp\Psr7\Request('POST', $url);
+    //     $response = $client->send($request, ['headers' => $headers, 'body' => $data]);
+    //     return json_decode($response->getBody()->getContents());
+    // } catch (\GuzzleHttp\Exception\RequestException $e) {
+    //     return json_decode($e->getResponse()->getBody()->getContents());
+    // }
+
+    // $headers = [
+    //     // 'Authorization: Basic bWVyY2hhbnQuTUJBTkdVSVQ6MDVmZTE1YzlhY2M2MDdjNGExYTdmM2ZmN2JmZDQ2MmU=', // test
+    //     'Authorization: Basic bWVyY2hhbnQuTUJBTkdVSVQ6ZjdmNWM5MDgwZDJjNzU0NGMwN2ViY2I0NmNmY2ZiY2Q=', //
+    //     'Content-Type: application/json'
+    // ];
+
+    // $curl = curl_init();
+    // curl_setopt_array($curl, array(
+    //     CURLOPT_URL => $url,
+    //     CURLOPT_RETURNTRANSFER => true,
+    //     CURLOPT_ENCODING => '',
+    //     CURLOPT_MAXREDIRS => 10,
+    //     CURLOPT_TIMEOUT => 0,
+    //     CURLOPT_FOLLOWLOCATION => true,
+    //     CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+    //     // CURLOPT_CUSTOMREQUEST => 'POST',
+    //     CURLOPT_POSTFIELDS => $data,
+    //     CURLOPT_HTTPHEADER => $headers,
+    // ));
+
+    // curl_setopt($curl, CURLOPT_POST, true);
+
+
+
+    //////////////////
+
+
+    $curl = curl_init();
+
+    curl_setopt_array($curl, array(
+        CURLOPT_URL => 'https://new.rawbankillico.com:4004/RAWAPIGateway/ecommerce/payment',
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_ENCODING => '',
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 0,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => 'POST',
+        CURLOPT_POSTFIELDS => '{
+        "mobilenumber": "00243993093010",
+        "trancurrency":"USD",
+        "amounttransaction": "1",
         "merchantid": "merch0000000000000201",
-        "invoiceid":"' . $invoiceid . '",
-        "terminalid":"' . $tid . '",
+        "invoiceid":"0887953453453",
+        "terminalid":"832987839423",
         "encryptkey": "AX8dsXSKqWlJqRhpnCeFJ03CzqMsCisQVUNSymXKqeiaQdHf8eQSyITvCD6u3CLZJBebnxj5LbdosC/4OvUtNbAUbaIgBKMC5MpXGRXZdfAlGsVRfHTmjaGDe1RIiHKP",
         "securityparams":{
             "gpslatitude": "24.864190",
             "gpslongitude": "67.090420"
         }
-    }';
+    }',
+        CURLOPT_HTTPHEADER => array(
+            'LogInName: fc46eb53f793b886f9fd4905d3cefe6c15385c9a49a5edc08079ee695e3bd222',
+            'LoginPass: d2d74e274526b085ee5a4aa4baebdec0c60620003a126fb7b7fe6fae64b25453',
+            'Accept: application/json',
+            'Content-Type: application/json',
+            'Authorization: Basic MzdjMTM1YWJlMWIxOGFhNDJmNDY0NzVkNDA5NzkzNmQzNTk0YzFjYzQxMDZkZGNlNGZlODM3MzgwNjE3Y2RjZToyZGI0ZjRiYTQzYTUyMzAxOTEyMTJhYjgzOWNiYTY5ZmJiOTNmM2Q0NmUwZjQwNjM3M2M1MjMyZDZjNmUzM2I1'
+        ),
+    ));
 
-    try {
-        $request = new GuzzleHttp\Psr7\Request('POST', $url);
-        $response = $client->send($request, ['headers' => $headers, 'body' => $data]);
-        return json_decode($response->getBody()->getContents());
-    } catch (\GuzzleHttp\Exception\RequestException $e) {
-        return json_decode($e->getResponse()->getBody()->getContents());
+    $response = curl_exec($curl);
+    $response = json_decode($response);
+
+    dd($response, $curl);
+
+    if ($response == null) {
+        return (object) ['status' => false, 'message' => "Une petite erreur s'est produite, veuillez relancer la transaction."];
     }
 }
 
