@@ -347,7 +347,7 @@
                             <td>${user.name}</td>
                             <td>${s}</td>
                             <td class="text-wrap">${user.users.join(', ')}</td>
-                            <td>${user.description ?? ''}</td>
+                            <td class="text-wrap">${user.description ?? ''}</td>
                             <td>${user.startdate} ... ${user.enddate}</td>
                             <td>
                                 <div class='d-flex justify-content-end'>
