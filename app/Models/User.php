@@ -16,8 +16,8 @@ use Laravel\Sanctum\HasApiTokens;
  * Class User
  *
  * @property int $id
+ * @property int|null $filiere_has_promotion_id
  * @property int|null $users_id
- * @property int|null $categorie_id
  * @property string $name
  * @property string $email
  * @property Carbon|null $email_verified_at
@@ -28,13 +28,11 @@ use Laravel\Sanctum\HasApiTokens;
  * @property string $user_role
  * @property string|null $phone
  * @property string|null $image
- * @property string|null $code
  *
- * @property Categorie|null $categorie
+ * @property FiliereHasPromotion|null $filiere_has_promotion
  * @property User|null $user
- * @property Collection|Depot[] $depots
- * @property Collection|Exportation[] $exportations
- * @property Collection|Profil[] $profils
+ * @property Collection|Project[] $projects
+ * @property Collection|Task[] $tasks
  * @property Collection|User[] $users
  *
  * @package App\Models
@@ -46,8 +44,8 @@ class User extends Authenticatable
     protected $table = 'users';
 
     protected $casts = [
+        'filiere_has_promotion_id' => 'int',
         'users_id' => 'int',
-        'categorie_id' => 'int',
         'email_verified_at' => 'datetime'
     ];
 
@@ -57,8 +55,8 @@ class User extends Authenticatable
     ];
 
     protected $fillable = [
+        'filiere_has_promotion_id',
         'users_id',
-        'categorie_id',
         'name',
         'email',
         'email_verified_at',
@@ -66,13 +64,12 @@ class User extends Authenticatable
         'remember_token',
         'user_role',
         'phone',
-        'image',
-        'code'
+        'image'
     ];
 
-    public function categorie()
+    public function filiere_has_promotion()
     {
-        return $this->belongsTo(Categorie::class);
+        return $this->belongsTo(FiliereHasPromotion::class);
     }
 
     public function user()
@@ -80,19 +77,14 @@ class User extends Authenticatable
         return $this->belongsTo(User::class, 'users_id');
     }
 
-    public function depots()
+    public function projects()
     {
-        return $this->hasMany(Depot::class, 'users_id');
+        return $this->belongsToMany(Project::class, 'project_has_users', 'users_id');
     }
 
-    public function exportations()
+    public function tasks()
     {
-        return $this->hasMany(Exportation::class, 'users_id');
-    }
-
-    public function profils()
-    {
-        return $this->hasMany(Profil::class, 'users_id');
+        return $this->belongsToMany(Task::class, 'task_has_users', 'users_id');
     }
 
     public function users()

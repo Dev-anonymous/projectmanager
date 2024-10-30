@@ -10,26 +10,28 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Class Categorie
+ * Class Category
  * 
  * @property int $id
- * @property string|null $categorie
+ * @property string|null $category
+ * @property string|null $image
  * 
- * @property Collection|User[] $users
+ * @property Collection|Product[] $products
  *
  * @package App\Models
  */
-class Categorie extends Model
+class Category extends Model
 {
-	protected $table = 'categorie';
+	protected $table = 'category';
 	public $timestamps = false;
 
 	protected $fillable = [
-		'categorie'
+		'category',
+		'image'
 	];
 
-	public function users()
+	public function products()
 	{
-		return $this->hasMany(User::class);
+		return $this->hasMany(Product::class);
 	}
 }

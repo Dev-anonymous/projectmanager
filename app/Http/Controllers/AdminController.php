@@ -3,9 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Categorie;
+use App\Models\Category;
 use App\Models\Exportation;
+use App\Models\Filiere;
+use App\Models\FiliereHasPromotion;
 use App\Models\Invoice;
 use App\Models\InvoicePay;
+use App\Models\Project;
+use App\Models\Promotion;
 use App\Models\Support;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -31,76 +36,56 @@ class AdminController extends Controller
     {
         return view('admin.admins');
     }
-    function agents()
+
+    function students()
     {
-        return view('admin.agents');
+        $promotion = FiliereHasPromotion::with(['promotion' => function ($q) {
+            $q->orderBy('promotion');
+        }])->with(['filiere' => function ($q) {
+            $q->orderBy('filiere');
+        }])->get();
+        return view('admin.students', compact('promotion'));
     }
 
     function users()
     {
-        $categories = Categorie::orderBy('categorie')->get();
-        return view('admin.users', compact('categories'));
-    }
-
-    function settings()
-    {
-        return view('admin.settings');
+        return view('admin.user');
     }
 
     function profile()
     {
         return view('admin.profile');
     }
-    function transactions()
+    function degree()
     {
-        return view('admin.transactions');
+        $promotion = Promotion::orderBy('promotion')->get();
+        $filiere = Filiere::orderBy('filiere')->get();
+        return view('admin.degree', compact('promotion', 'filiere'));
     }
-
     function category()
     {
         return view('admin.category');
     }
-
-    function export()
+    function products()
     {
-        $users = User::where('user_role', 'user')->orderBy('name')->whereHas('profils', function ($q) {
-            $q->where('solde_cdf', '>', 0);
-            $q->orWhere('solde_usd', '>', 0);
-        })->get();
-        return view('admin.export', compact('users'));
+        $project = Project::orderBy('name')->get();
+        $category = Category::orderBy('category')->get();
+        return view('admin.product', compact('project', 'category'));
     }
-
-    function excel()
+    function projects()
     {
-        $idxport = request('el');
-        $export = Exportation::findOrFail($idxport);
+        $students = User::where('user_role', 'student')->orderBy('name')->get();
+        $project = Project::orderBy('name')->get();
+        $category = Category::orderBy('category')->get();
 
-        $data = [
-            ['TO_MOBILE_NUMBER', 'AMOUNT', 'CURRENCY'],
-        ];
-        foreach ($export->profils()->with('user')->get() as $el) {
-            $o = (object) [];
-            $cdf = $el->pivot->montant_cdf;
-            $usd = $el->pivot->montant_usd;
-            $phone = $el->user->phone;
-
-            if ($usd) {
-                $line = [];
-                $line[] = $phone;
-                $line[] = $usd;
-                $line[] = 'USD';
-                $data[] = $line;
-            }
-
-            if ($cdf) {
-                $line = [];
-                $line[] = $phone;
-                $line[] = $cdf;
-                $line[] = 'CDF';
-                $data[] = $line;
-            }
+        $item = request('item');
+        $pro = Project::where('id', $item)->first();
+        if ($pro) {
+            $project = $pro;
+            $students = $pro->users()->orderBy('name')->get();
+            return view('admin.projectdetails', compact('students', 'project', 'category'));
         }
-        $name = "Exportation_$export->id\_{$export->date?->format('d-m-Y')}";
-        SimpleXLSXGen::fromArray($data)->downloadAs("$name.xlsx");
+
+        return view('admin.projects', compact('students', 'project', 'category'));
     }
 }

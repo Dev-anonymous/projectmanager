@@ -3,31 +3,14 @@ define('BASEF', 'https://backend.flexpay.cd/api/rest/v1');
 define('FTKN', 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJcL2xvZ2luIiwicm9sZXMiOlsiTUVSQ0hBTlQiXSwiZXhwIjoxNzgxMTcyNzUzLCJzdWIiOiJiOWE4MDM3ZTEyM2YyMzY0OTNiODkxOGU1N2IyNmY1ZiJ9.r8cFNhWM1AC9_pt8usfuJlzaFMvGDvxNde0ZNfU2X0Q');
 define('COMMISSION', 3.5 / 100);
 
-use App\Models\Categorie;
+use App\Models\Category;
 use App\Models\Config;
-use App\Models\Depot;
-use App\Models\Pending;
-use App\Models\Profil;
-use App\Models\Taux;
+use App\Models\Filiere;
+use App\Models\Promotion;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Twilio\Rest\Client;
-
-function typepiece()
-{
-    return [
-        "CARTE D'ÉLECTEUR",
-        "PERMIS DE CONDUIRE",
-        "PASSEPORT",
-        "AUTRE"
-    ];
-}
-
-function modepaie()
-{
-    return ['cash', 'illico_cash', 'mobile_money', 'carte_bancaire'];
-}
 
 function v($v, $append = '')
 {
@@ -41,86 +24,33 @@ function nnow()
 
 function defaultdata()
 {
-    $taux = Taux::first();
-    if (!$taux) {
-        remotetaux();
-    }
-    $taux = Taux::first();
-    if (!$taux) {
-        $v = 2850;
-        $taux = Taux::create(['usd_cdf' => $v, 'cdf_usd' => 1 / $v, 'auto' => 1]);
-    }
-
     $u = User::where('user_role', 'admin')->first();
     if (!$u) {
         User::create(['name' => 'Admin', 'email' => 'admin@admin.admin', 'user_role' => 'admin', 'password' => Hash::make('admin@2024')]);
     }
 
-    $cat = Categorie::first();
-    if (!$cat) {
-        foreach (['Personnel', 'Chauffeur', 'Marchand'] as $el) {
-            Categorie::create(['categorie' => $el]);
+    $pr = Promotion::first();
+    if (!$pr) {
+        foreach (['Bac +1', 'BAC +2', 'BAC +3', 'Master 1', 'Master 2', 'Doctorat 1', 'Doctorat 2'] as $el) {
+            Promotion::create(['promotion' => $el]);
+        }
+    }
+
+    $fi = Filiere::first();
+    if (!$fi) {
+        foreach (['MEDECINE', 'DROIT', 'SCIENCES TECHNOLOGIQUES', 'SCIENCES INFORMATIQUES', 'ARCHITECTURE', 'SCIENCES DE GESTION', 'SCIENCES DES ALIMENTS ET DE L\'ENVIRONNEMENT', 'SCIENCES DE L\'INFORMATION ET DE LA COMMUNICATION'] as $el) {
+            Filiere::create(['filiere' => $el]);
+        }
+    }
+
+    $c = Category::first();
+    if (!$c) {
+        foreach (['Categorie 1'] as $el) {
+            Category::create(['category' => $el]);
         }
     }
 }
 
-function remotetaux()
-{
-    try {
-        $response = Http::get('https://control.gooomart.com/api/taux');
-        $rep = $response->object();
-        if ($rep->success) {
-            $cdf_usd = $rep->CDF_USD;
-            $usd_cdf = $rep->USD_CDF;
-            $maj = $rep->maj;
-            $taux = Taux::first();
-            if (!$taux) {
-                Taux::create(['cdf_usd' => $cdf_usd, 'usd_cdf' => $usd_cdf, 'auto' => 1, 'date' => (new \DateTime($maj))->format('Y-m-d H:i:s')]);
-            } else {
-                $taux->update(['cdf_usd' => $cdf_usd, 'usd_cdf' => $usd_cdf, 'date' => (new \DateTime($maj))->format('Y-m-d H:i:s')]);
-            }
-        }
-    } catch (\Throwable $th) {
-        // throw $th;
-    }
-}
-
-function isremoteon()
-{
-    return Taux::first()->auto == 1;
-}
-
-function gettaux()
-{
-    return Taux::first();
-}
-
-function userid($user)
-{
-    $tab = explode(' ', str_replace('  ', '', $user));
-    $n = '';
-    foreach ($tab as $e) {
-        $n .= substr($e, 0, 1);
-    }
-    $t =  User::where('user_role', 'user')->count() + 1;
-    if ($t <= 9) {
-        $t = "00$t";
-    } else if ($t >= 10 && $t <= 99) {
-        $t = "0$t";
-    }
-    $v = "$n-$t-";
-    $rn = rand(1000, 9999);
-    $v .= $rn;
-
-    while (1) {
-        if (User::where('code', $v)->first()) {
-            return userid($user);
-        } else {
-            break;
-        }
-    }
-    return strtoupper($v);
-}
 
 function transid($user)
 {
@@ -143,32 +73,6 @@ function transid($user)
         }
     }
     return ($v);
-}
-
-function change($montant, $from, $to)
-{
-    if (!in_array(strtoupper($from), ['USD', 'CDF']) or !in_array(strtoupper($to), ['USD', 'CDF'])) {
-        throw new TypeError("Devise non valide : $from -> $to");
-    }
-
-    if ($to == $from) {
-        return $montant;
-    }
-
-    $taux = Taux::first();
-    if ($taux) {
-        $c = strtolower("{$from}_{$to}");
-        $tx = $taux->$c;
-        $montant = $montant * $tx;
-    } else {
-        throw new TypeError("Tx");
-    }
-    return  $montant;
-}
-
-function commission($montant)
-{
-    return $montant - ($montant * COMMISSION);
 }
 
 function isvalidenumber($phone)
@@ -686,7 +590,7 @@ function orangeSms($to = '', $msg = '')
 }
 
 
-function userimage(User $user)
+function userimage($user)
 {
     $img = $user->image;
     if ($img) {

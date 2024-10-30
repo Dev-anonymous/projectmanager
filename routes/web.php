@@ -40,15 +40,14 @@ Route::middleware('auth')->group(function () {
     Route::prefix('admin')->group(function () {
         Route::controller(AdminController::class)->group(function () {
             Route::get('',  'home')->name('admin.home');
-            Route::get('transactions',  'transactions')->name('admin.transactions');
-            Route::get('export',  'export')->name('admin.export');
+            Route::get('projects',  'projects')->name('admin.projects');
             Route::get('admins',  'admins')->name('admin.admins');
-            Route::get('agents',  'agents')->name('admin.agents');
-            Route::get('users',  'users')->name('admin.users');
-            Route::get('category',  'category')->name('admin.category');
-            Route::get('settings',  'settings')->name('admin.settings');
+            Route::get('students',  'students')->name('admin.students');
             Route::get('profile',  'profile')->name('admin.profile');
-            Route::any('export/excel',  'excel')->name('admin.excel');
+            Route::get('degree',  'degree')->name('admin.degree');
+            Route::get('products',  'products')->name('admin.products');
+            Route::get('category',  'category')->name('admin.category');
+            Route::get('users',  'users')->name('admin.users');
         });
     });
 

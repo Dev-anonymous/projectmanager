@@ -20,50 +20,30 @@ class UsersController extends Controller
      */
     public function index()
     {
+        $id = request('filiere_has_promotion_id');
         $role = auth()->user()->user_role;
         $data = [];
         if ('admin' == $role) {
             $type = request('type');
-            $t = User::orderBy('name')->where('user_role', $type)->get();
-            if ($type == 'user') {
-                foreach ($t as $el) {
-                    $o = (object)$el->toArray();
-                    $pro = $el->profils()->first();
-                    if ($pro) {
-                        $o->solde_cdf = v($pro->solde_cdf, 'CDF');
-                        $o->solde_usd = v($pro->solde_usd, 'USD');
-                        $o->adresse = $pro->adresse;
-                        $o->typepiece = $pro->typepiece;
-                        $o->pieceidentite = asset('storage/' . $pro->pieceidentite);
-                    }
-                    $o->image = userimage($el);
-                    $o->categorie = $el->categorie->categorie;
-                    $data[] = $o;
-                }
-            } else {
-                foreach ($t as $el) {
-                    $o = (object)$el->toArray();
-                    $o->image = userimage($el);
-                    $data[] = $o;
+            $t = User::orderBy('name')->where('user_role', $type);
+
+            if ($id) {
+                if ('student' == $type) {
+                    $t->where('filiere_has_promotion_id', $id);
                 }
             }
-        }
-        if ('agent' == $role) {
-            $type = 'user';
-            $t = User::orderBy('name')->where(['user_role' => $type, 'users_id' => auth()->user()->id])->get();
-            foreach ($t as $el) {
+
+            foreach ($t->get() as $el) {
                 $o = (object)$el->toArray();
-                $pro = $el->profils()->first();
-                if ($pro) {
-                    $o->adresse = $pro->adresse;
-                    $o->typepiece = $pro->typepiece;
-                    $o->pieceidentite = asset('storage/' . $pro->pieceidentite);
-                }
                 $o->image = userimage($el);
-                $o->categorie = $el->categorie->categorie;
+                if ('student' == $type) {
+                    $h = $el->filiere_has_promotion()->first();
+                    $o->promotion = "{$h->promotion->promotion} {$h->filiere->filiere}";
+                }
                 $data[] = $o;
             }
         }
+
         return [
             'success' => true,
             'data' => $data
@@ -80,7 +60,7 @@ class UsersController extends Controller
     {
         $user_role = request('user_role');
         $rules =  [
-            'user_role' => 'required|in:admin,agent,user',
+            'user_role' => 'required|in:admin,student',
             'name' => 'required',
             'email' => 'required|email|unique:users',
             'password' => 'required',
@@ -88,12 +68,8 @@ class UsersController extends Controller
             'phone' => 'required|max:10,min:10',
         ];
 
-        if ('user' == $user_role) {
-            $rules['categorie_id'] = 'required|exists:categorie,id';
-            $rules['adresse'] = 'required';
-            $rules['image'] = 'required|mimes:jpeg,jpg,png|max:500';
-            $rules['pieceidentite'] = 'required|mimes:jpeg,jpg,png|max:500';
-            $rules['typepiece'] = 'required|in:' . implode(',', typepiece());
+        if ('student' == $user_role) {
+            $rules['filiere_has_promotion_id'] = 'required|exists:filiere_has_promotion,id';
         }
 
         $validator = Validator::make(request()->all(), $rules);
@@ -119,15 +95,9 @@ class UsersController extends Controller
 
         $data['password'] = Hash::make($data['password']);
         $data['name'] = ucfirst($data['name']);
-        $data['code'] = userid($data['name']);
         $data['users_id'] = auth()->user()->id;
         $user = User::create($data);
 
-        if ('user' == $user_role) {
-            $data['pieceidentite'] = request()->file('pieceidentite')->store('image', 'public');
-            $data['users_id'] = $user->id;
-            Profil::create($data);
-        }
         DB::commit();
 
         return ['success' => true, 'message' => 'Utilisateur créé.'];
@@ -154,8 +124,6 @@ class UsersController extends Controller
     public function update(Request $request, User $user)
     {
         $u = auth()->user();
-        abort_if('agent' == $u->user_role and $user->users_id != $u->id, 403);
-
         $user_role = $user->user_role;
         $rules =  [
             'name' => 'required',
@@ -164,12 +132,6 @@ class UsersController extends Controller
             'image' => 'sometimes|mimes:jpeg,jpg,png|max:500',
             'phone' => 'required|max:10,min:10||unique:users,phone,' . $user->id,
         ];
-
-        if ('user' == $user_role) {
-            $rules['adresse'] = 'required';
-            $rules['pieceidentite'] = 'sometimes|mimes:jpeg,jpg,png|max:500';
-            $rules['typepiece'] = 'required|in:' . implode(',', typepiece());
-        }
 
         $validator = Validator::make(request()->all(), $rules);
 
@@ -200,14 +162,6 @@ class UsersController extends Controller
         $data['name'] = ucfirst($data['name']);
         DB::beginTransaction();
         $user->update($data);
-        if ('user' == $user_role) {
-            $profil = $user->profils()->first();
-            if ($request->hasFile('pieceidentite')) {
-                File::delete('storage/' . $profil->pieceidentite);
-                $data['pieceidentite'] = request()->file('pieceidentite')->store('image', 'public');
-            }
-            $profil->update($data);
-        }
         DB::commit();
 
         return ['success' => true, 'message' => 'Utilisateur mis à jour.'];
@@ -226,26 +180,15 @@ class UsersController extends Controller
                 'message' => 'Veuillez demander à un autre administrateur de supprimer votre compte'
             ];
         }
-        if ('user' == $user->user_role) {
-            $profil = $user->profils()->first();
-            if ($profil->solde_usd or $profil->solde_cdf) {
-                return [
-                    'message' => 'Seuls les comptes avec un solde de 0 peuvent être supprimés.'
-                ];
-            }
-
-            $n = $profil->depots()->count();
+        if ('student' == $user->user_role) {
+            $n = $user->projects()->count();
             if ($n) {
                 return [
-                    'message' => "Ce compte a déjà $n transaction(s), vous ne pouvez donc le supprimé."
+                    'message' => "Ce compte est déjà lié à $n projet(s), vous ne pouvez donc le supprimé."
                 ];
             }
         }
         File::delete('storage/' . $user->image);
-        $pro = $user->profils()->first();
-        if ($pro) {
-            File::delete('storage/' . $pro->pieceidentite);
-        }
         $user->delete();
         return ['success' => true, 'message' => 'Compte supprimé'];
     }

@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title> Clients | {{ config('app.name') }} </title>
+    <title> Etudiant | {{ config('app.name') }} </title>
     <x-css-file />
 </head>
 
@@ -19,12 +19,12 @@
         <div class="main-content app-content">
             <div class="container-fluid">
                 <div class="d-md-flex d-block align-items-center justify-content-between my-4 page-header-breadcrumb">
-                    <h1 class="page-title fw-semibold fs-18 mb-0">Clients</h1>
+                    <h1 class="page-title fw-semibold fs-18 mb-0"></h1>
                     <div class="ms-md-1 ms-0">
                         <nav>
                             <ol class="breadcrumb mb-0">
                                 <li class="breadcrumb-item"><a href="javascript:void(0);">Dashboards</a></li>
-                                <li class="breadcrumb-item active" aria-current="page">Clients</li>
+                                <li class="breadcrumb-item active" aria-current="page">Etudiant</li>
                             </ol>
                         </nav>
                     </div>
@@ -33,15 +33,27 @@
                     <div class="col-xl-12 mb-2">
                         <div class="card custom-card">
                             <div class="card-header d-flex justify-content-between">
-                                <div class="card-title">Comptes Clients</div>
-
-                                <div class="m-2">
-                                    <button
-                                        class="modal-effect btn btn-teal-light btn-border-down btn-sm btn-wave waves-effect waves-light"
-                                        data-bs-effect="effect-flip-vertical" data-bs-toggle="modal"
-                                        href="#mdl">Ajouter
-                                    </button>
-
+                                <div class="card-title">Comptes Etudiant</div>
+                                <div class="m-2 d-flex">
+                                    <div class="">
+                                        <div style="width: 200px; margin-right: 10px">
+                                            <select id="filiere_has_promotion_id" name="filiere_has_promotion_id"
+                                                class="form-control">
+                                                <option value="">Toutes</option>
+                                                @foreach ($promotion as $el)
+                                                    <option value="{{ $el->id }}">{{ $el->promotion->promotion }}
+                                                        {{ $el->filiere->filiere }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="">
+                                        <button
+                                            class="modal-effect btn btn-teal-light btn-border-down btn-sm btn-wave waves-effect waves-light"
+                                            data-bs-effect="effect-flip-vertical" data-bs-toggle="modal"
+                                            href="#mdl">Ajouter
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                             <div class="card-body">
@@ -52,12 +64,9 @@
                                                 <th style="width:5px!important"><span ldr></span></th>
                                                 <th></th>
                                                 <th>Nom</th>
-                                                <th>Catégorie</th>
-                                                <th>Solde</th>
+                                                <th>Promotion</th>
                                                 <th>Tel.</th>
                                                 <th>Email</th>
-                                                <th>Adresse</th>
-                                                <th>Pièce identité</th>
                                                 <th></th>
                                             </tr>
                                         </thead>
@@ -75,17 +84,19 @@
             <div class="modal-dialog  text-center" role="document">
                 <div class="modal-content modal-content-demo">
                     <div class="modal-header">
-                        <h6 class="modal-title">Nouveau client </h6><button aria-label="Close" class="btn-close"
+                        <h6 class="modal-title">Nouveau compte </h6><button aria-label="Close" class="btn-close"
                             data-bs-dismiss="modal"></button>
                     </div>
                     <form action="#" id="f-add">
                         <div class="modal-body text-start">
-                            <input type="hidden" name="user_role" value="user">
+                            <input type="hidden" name="user_role" value="student">
                             <div class="col-xl-12 mb-2">
-                                <label class="form-label text-default">Catégorie</label>
-                                <select name="categorie_id" id="" class="form-control" required="required">
-                                    @foreach ($categories as $el)
-                                        <option value="{{ $el->id }}">{{ $el->categorie }}</option>
+                                <label class="form-label text-default">Promotion</label>
+                                <select name="filiere_has_promotion_id" id="" class="form-control"
+                                    required="required">
+                                    @foreach ($promotion as $el)
+                                        <option value="{{ $el->id }}">{{ $el->promotion->promotion }}
+                                            {{ $el->filiere->filiere }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -104,29 +115,11 @@
                                 <input required type="email" name="email" class="form-control form-control-sm"
                                     placeholder="Email">
                             </div>
-                            <div class="col-xl-12 mb-2">
-                                <label class="form-label text-default">Adresse</label>
-                                <textarea name="adresse" id="" cols="30" rows="3" required name="adresse"
-                                    class="form-control form-control-sm" placeholder="Adresse"></textarea>
 
-                            </div>
-                            <div class="col-xl-12 mb-2">
-                                <label class="form-label text-default">Type de pièce d'identité</label>
-                                <select name="typepiece" id="" class="form-control">
-                                    @foreach (typepiece() as $type)
-                                        <option>{{ $type }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="col-xl-12 mb-2">
-                                <label for="text-area" class="form-label">Image pièce d'identité</label>
-                                <input type="file" required class="filepond0" name="pieceidentite"
-                                    accept="image/png, image/jpeg" data-max-file-size="500KB" data-max-files="1">
-                            </div>
                             <div class="col-xl-12 mb-2">
                                 <label for="text-area" class="form-label">Image profil</label>
-                                <input type="file" required class="filepond1" name="image"
-                                    accept="image/png, image/jpeg" data-max-file-size="500KB" data-max-files="1">
+                                <input type="file" class="filepond1" name="image" accept="image/png, image/jpeg"
+                                    data-max-file-size="500KB" data-max-files="1">
                             </div>
                             <div class="col-xl-12 mb-1 mt-2">
                                 <label for="signin-password" class="form-label text-default d-block">Mot de passe
@@ -177,25 +170,6 @@
                                 <label class="form-label text-default">Email</label>
                                 <input required type="email" name="email" class="form-control form-control-sm"
                                     placeholder="Email">
-                            </div>
-                            <div class="col-xl-12 mb-2">
-                                <label class="form-label text-default">Adresse</label>
-                                <textarea name="adresse" id="" cols="30" rows="3" required name="adresse"
-                                    class="form-control form-control-sm" placeholder="Adresse"></textarea>
-
-                            </div>
-                            <div class="col-xl-12 mb-2">
-                                <label class="form-label text-default">Type de pièce d'identité</label>
-                                <select name="typepiece" id="" class="form-control">
-                                    @foreach (typepiece() as $type)
-                                        <option>{{ $type }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="col-xl-12 mb-2">
-                                <label for="text-area" class="form-label">Image pièce d'identité (optionnel)</label>
-                                <input type="file" class="filepond00" name="pieceidentite"
-                                    accept="image/png, image/jpeg" data-max-file-size="500KB" data-max-files="1">
                             </div>
                             <div class="col-xl-12 mb-2">
                                 <label for="text-area" class="form-label">Image profil (optionnel)</label>
@@ -279,10 +253,17 @@
             pond00 = FilePond.create($('.filepond00')[0]);
             pond11 = FilePond.create($('.filepond11')[0]);
 
+            $('#filiere_has_promotion_id').change(function() {
+                getdata();
+            })
+
             function getdata() {
                 $('span[ldr]').removeClass().addClass('bx bx-spin bx-loader bx-sm');
                 $.ajax({
-                    'url': '{{ route('users.index', ['type' => 'user']) }}',
+                    'url': '{{ route('users.index', ['type' => 'student']) }}',
+                    data: {
+                        filiere_has_promotion_id: $('#filiere_has_promotion_id').val()
+                    },
                     success: function(res) {
                         table.DataTable().destroy();
                         var html = '';
@@ -291,19 +272,14 @@
                             html += `<tr>
                             <td>${i+1}</td>
                             <td><img src="${user.image}" alt="img" width="32" height="32" class="rounded-circle"></td>
-                            <td>${user.name}<br><i>${user.code??''}</i></td>
-                            <td>${user.categorie}</td>
-                            <td>${user.solde_cdf}<br>${user.solde_usd}</td>
+                            <td>${user.name}</i></td>
+                            <td>${user.promotion}</td>
                             <td>${user.phone??'-'}</td>
                             <td>${user.email??'-'}</td>
-                            <td>${user.adresse??'-'}</td>
-                            <td>
-                                <a href="${user.pieceidentite??'#'}" target='_blanck'>${user.typepiece??'-'}</a>
-                            </td>
                             <td>
                                 <div class='d-flex justify-content-end'>
-                                    <button class="btn btn-primary btn-sm m-1" data="${escape(JSON.stringify(user))}"  value="${user.id}" bedit>Modifier</button>
-                                    <button class="btn btn-outline-danger btn-sm m-1"  value="${user.id}" bdel >Supprimer</button>
+                                    <button class="btn btn-primary btn-sm m-1" data="${escape(JSON.stringify(user))}"  value="${user.id}" bedit><i class='bx bx-edit'></i></button>
+                                    <button class="btn btn-outline-danger btn-sm m-1"  value="${user.id}" bdel ><i class='bx bx-trash'></i></button>
                                 </div>
                             </td>
                         </tr>

@@ -5,33 +5,29 @@ use App\Http\Controllers\API\ConfigAPIController;
 use App\Http\Controllers\API\DashAPIController;
 use App\Http\Controllers\API\DepotAPIController;
 use App\Http\Controllers\API\ExportAPIController;
+use App\Http\Controllers\API\FacultAPIController;
+use App\Http\Controllers\API\ProductAPIController;
+use App\Http\Controllers\API\ProjectAPIController;
+use App\Http\Controllers\API\TaskAPIController;
 use App\Http\Controllers\API\TauxAPIController;
 use App\Http\Controllers\API\UsersController;
 use App\Http\Controllers\AppController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| is assigned the "api" middleware group. Enjoy building your API!
-|
-*/
-
 Route::middleware('auth:sanctum')->group(function () {
-    Route::resource('taux', TauxAPIController::class)->only(['index', 'store']);
     Route::resource('users', UsersController::class)->only(['index', 'store', 'destroy']);
     Route::post('users/{user}', [UsersController::class, 'update']);
-    Route::resource('depot', DepotAPIController::class)->only(['index']);
     Route::resource('dash', DashAPIController::class)->only(['index']);
     Route::resource('config', ConfigAPIController::class)->only(['store']);
-    Route::resource('export', ExportAPIController::class);
-    Route::post('export-preview', [ExportAPIController::class, 'preview'])->name('export-preview');
-    Route::resource('category', CategoryAPIController::class);
+    Route::resource('faculte', FacultAPIController::class);
+    Route::resource('category', CategoryAPIController::class)->only(['index', 'store', 'destroy']);
+    Route::post('category/{category}', [CategoryAPIController::class, 'update']);
+    Route::resource('product', ProductAPIController::class)->only(['index', 'store', 'destroy']);
+    Route::post('product/{product}', [ProductAPIController::class, 'update']);
+    Route::resource('project', ProjectAPIController::class)->only(['index', 'store', 'destroy']);
+    Route::post('project/{project}', [ProjectAPIController::class, 'update']);
+    Route::resource('task', TaskAPIController::class);
 
     Route::post('cpa', [AppController::class, 'cpa'])->name('cpa');
     Route::post('fpi', [AppController::class, 'fpi'])->name('fpi');

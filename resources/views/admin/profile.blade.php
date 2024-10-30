@@ -19,7 +19,7 @@
         <div class="main-content app-content">
             <div class="container-fluid">
                 <div class="d-md-flex d-block align-items-center justify-content-between my-4 page-header-breadcrumb">
-                    <h1 class="page-title fw-semibold fs-18 mb-0">Profil</h1>
+                    <h1 class="page-title fw-semibold fs-18 mb-0"></h1>
                     <div class="ms-md-1 ms-0">
                         <nav>
                             <ol class="breadcrumb mb-0">
@@ -81,42 +81,6 @@
                 </div>
             </div>
         </div>
-
-        <div class="modal fade" id="mdl">
-            <div class="modal-dialog  text-center" role="document">
-                <div class="modal-content modal-content-demo">
-                    <div class="modal-header">
-                        <h6 class="modal-title">Taux </h6><button aria-label="Close" class="btn-close"
-                            data-bs-dismiss="modal"></button>
-                    </div>
-                    <form action="#" id="f-add">
-                        <div class="modal-body text-start">
-                            <input type="hidden" name="action" value="update">
-                            <div class="col-xl-12">
-                                <label for="signin-username" class="form-label text-default">1 USD en CDF</label>
-                                <input required type="number" value="{{ gettaux()->usd_cdf }}" step="0.0000001"
-                                    min="0.0000001" name="usd_cdf" class="form-control form-control-sm"
-                                    id="signin-username">
-                            </div>
-                            <div class="col-xl-12">
-                                <label for="signin-username" class="form-label text-default">1 CDF en USD</label>
-                                <input required type="number" value="{{ gettaux()->cdf_usd }}" step="0.0000001"
-                                    min="0.0000001" name="cdf_usd" class="form-control form-control-sm"
-                                    id="signin-username">
-                            </div>
-                            <div class="mt-2">
-                                <div id="rep"></div>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button class="btn btn-light" data-bs-dismiss="modal">Fermer</button>
-                            <button class="btn btn-primary" type="submit"><span></span> Valider</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-
         <x-footer />
     </div>
 
@@ -126,113 +90,7 @@
     <x-datatable />
     <script>
         $(document).ready(function() {
-            function getdata() {
-                $('[taux]').removeClass().html('').addClass('bx bx-spin bx-loader bx-sm');
-                $.ajax({
-                    'url': '{{ route('taux.index') }}',
-                    success: function(res) {
-                        var ht = `
-                            <p class="m-0">1 CDF = ${res.cdf_usd} USD</p>
-                            <p class="m-0">1 USD = ${res.usd_cdf} CDF</p>
-                        `;
-                        $('[taux]').html(ht);
-                    },
-                    error: function(res) {
 
-                    }
-                }).always(function() {
-                    $('[taux]').removeClass();
-                })
-            }
-            getdata();
-
-            $('[name=toggleswitch001]').change(function() {
-                var to = $(this).is(':checked') ? 1 : 0;
-                $('[txldr]').removeClass().addClass('bx bx-spin bx-loader bx-sm');
-                $.ajax({
-                    'url': '{{ route('taux.store') }}',
-                    type: 'post',
-                    data: {
-                        to: to,
-                        action: 'setauto'
-                    },
-                    success: function(res) {
-
-                    },
-                    error: function(res) {
-                        alert("Erreur");
-                    }
-                }).always(function() {
-                    $('[txldr]').removeClass();
-                })
-
-            });
-
-            $('[remotetx]').click(function() {
-                var btn = $(this);
-                btn.find('span').removeClass().addClass('bx bx-spin bx-loader');
-                btn.attr('disabled', true);
-                $.ajax({
-                    'url': '{{ route('taux.store') }}',
-                    type: 'post',
-                    data: {
-                        action: 'remote'
-                    },
-                    success: function(res) {
-                        getdata();
-                    },
-                    error: function(res) {
-                        alert("Erreur");
-                    }
-                }).always(function() {
-                    btn.find('span').removeClass();
-                    btn.attr('disabled', false);
-                })
-            });
-
-            $('#f-add').submit(function() {
-                event.preventDefault();
-                var form = $(this);
-                var rep = $('#rep', form);
-                rep.html('');
-
-                var btn = $(':submit', form);
-                btn.attr('disabled', true);
-                btn.find('span').removeClass().addClass('bx bx-spin bx-loader');
-                var data = new FormData(form[0]);
-                $.ajax({
-                    type: 'post',
-                    data: data,
-                    contentType: false,
-                    processData: false,
-                    url: '{{ route('taux.store') }}',
-                    success: function(r) {
-                        if (r.success) {
-                            btn.attr('disabled', false);
-                            rep.removeClass().addClass('text-success');
-                            getdata();
-                            setTimeout(() => {
-                                $('.modal').modal('hide');
-                            }, 2000);
-                        } else {
-                            btn.attr('disabled', false);
-                            rep.removeClass().addClass('text-danger');
-                        }
-                        btn.find('span').removeClass();
-                        rep.html(r.message);
-                    },
-                    error: function(r) {
-                        btn.attr('disabled', false);
-                        btn.find('span').removeClass();
-                        alert("une erreur s'est produite");
-                    }
-                });
-            });
-
-            $('[name="usd_cdf"]').keyup(function() {
-                var val = $(this).val();
-                $('[name="cdf_usd"]').val(1 / val);
-            })
         });
     </script>
 

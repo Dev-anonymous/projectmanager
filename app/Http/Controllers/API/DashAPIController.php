@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Models\Depot;
 use App\Models\Profil;
+use App\Models\Project;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -19,211 +20,118 @@ class DashAPIController extends Controller
     {
         $user = auth()->user();
 
+        $data = [];
         if ('admin' == $user->user_role) {
-            $nbchauffeurs  = User::where('user_role', 'user')->count();
-            $nbagents  = User::where('user_role', 'agent')->count();
-            $nbadmins  = User::where('user_role', 'admin')->count();
+            $data['totalprojet']  = Project::count();
+            $data['projetfini']  = Project::where('status', 1)->count();
+            $data['projetencours']  = Project::where('status', 0)->count();
+            $data['projetenretard']  = Project::where('status', 0)->whereDate('enddate', '<', nnow())->count();
 
-            $topdrivers  = Profil::orderBy('solde_usd', 'desc')->orderBy('solde_cdf', 'desc')->limit(10)->get();
-            $t = [];
-
-            foreach ($topdrivers as $el) {
-                $o = (object)[];
-
-                $o->image = userimage($el->user);
-                $o->name = $el->user->name;
-                $o->email = $el->user->email;
-                $o->phone = $el->user->phone;
-                $o->solde_cdf = v($el->solde_cdf, 'CDF');
-                $o->solde_usd = v($el->solde_usd, 'USD');
-                $t[] = $o;
-            }
-            $topdrivers = $t;
-        }
-
-        $recenttrans = Depot::orderBy('id', 'desc')->limit(10);
-
-        if ('admin' == $user->user_role) {
-            //
-        } else if ('agent' == $user->user_role) {
-            $recenttrans = $recenttrans->where('users_id', $user->id);
-        } elseif ('user' == $user->user_role) {
-            $profil = $user->profils()->first();
-            $recenttrans = $recenttrans->where('profil_id', $profil->id);
-        } else {
-            abort(403);
-        }
-        $recenttrans = $recenttrans->get();
-
-        $t = [];
-        foreach ($recenttrans as $el) {
-            $u = (object) [];
-            $trans = (object) [];
-            $o = (object) [];
-
-            $u->name = $el->profil->user->name;
-            $u->phone = $el->profil->user->phone;
-            $u->email = $el->profil->user->email;
-
-            $u->image = userimage($el->profil->user);
-
-            $o->user = $u;
-
-            $trans->type = strtoupper($el->type);
-            $trans->commission = v((float) $el->commission * 100);
-            if ('CDF' == $el->devise_depot) {
-                $trans->montant = v($el->montant_cdf, 'CDF');
-                $trans->montantrecu = v($el->montant_cdf - ((float)$el->commission * $el->montant_cdf), 'CDF');
-            } elseif ('USD' == $el->devise_depot) {
-                $trans->montant = v($el->montant_usd, 'USD');
-                $trans->montantrecu = v($el->montant_usd - ((float)$el->commission * $el->montant_usd), 'USD');
-            } else {
-                die('dev');
-            }
-            $trans->date = $el->date->format('d-m-Y H:i:s');
-
-            $o->trans = $trans;
-            $t[] = $o;
-        }
-        $recenttrans = $t;
-
-        if ('admin' == $user->user_role) {
-            $cash = Depot::selectRaw('sum(montant_cdf) as montant_cdf, sum(montant_usd) as montant_usd, devise_depot as devise')->whereMonth('date', date('m'))->where('type', 'cash')->groupBy('devise_depot')->get();
-            $illico_cash = Depot::selectRaw('sum(montant_cdf) as montant_cdf, sum(montant_usd) as montant_usd, devise_depot as devise')->whereMonth('date', date('m'))->where('type', 'illico_cash')->groupBy('devise_depot')->get();
-            $mobile_money = Depot::selectRaw('sum(montant_cdf) as montant_cdf, sum(montant_usd) as montant_usd, devise_depot as devise')->whereMonth('date', date('m'))->where('type', 'mobile_money')->groupBy('devise_depot')->get();
-            $carte_bancaire = Depot::selectRaw('sum(montant_cdf) as montant_cdf, sum(montant_usd) as montant_usd, devise_depot as devise')->whereMonth('date', date('m'))->where('type', 'carte_bancaire')->groupBy('devise_depot')->get();
-
-            $t = [];
-            foreach ($cash as $el) {
-                if ($el->devise == 'CDF') {
-                    $t[] = v($el->montant_cdf, 'CDF');
-                } elseif ($el->devise == 'USD') {
-                    $t[] = v($el->montant_usd, 'USD');
+            $t = Project::orderBy('budget', 'desc')->limit(10)->get();
+            $d = [];
+            foreach ($t as $el) {
+                $o = (object)$el->toArray();
+                $o->budget = v($el->budget, 'CDF');
+                $o->startdate = $el->startdate?->format('Y-m-d H:i');
+                $o->enddate = $el->enddate?->format('Y-m-d H:i');
+                $perc = 100;
+                $task1 = $el->tasks()->where('status', 1)->count();
+                $task0 = $el->tasks()->where('status', 0)->count();
+                $tot = $task0 + $task1;
+                if ($tot) {
+                    $perc = (int) (($task1 / $tot) * 100);
                 }
+                $o->progress = $perc;
+                $d[] = $o;
             }
-            $cash = $t;
+            $data['topproject'] = $d;
 
-            $t = [];
-            foreach ($illico_cash as $el) {
-                if ($el->devise == 'CDF') {
-                    $t[] = v($el->montant_cdf, 'CDF');
-                } elseif ($el->devise == 'USD') {
-                    $t[] = v($el->montant_usd, 'USD');
-                }
-            }
-            $illico_cash = $t;
+            $data['nbadmins'] = User::where('user_role', 'admin')->count();
+            $data['nbstudents'] = User::where('user_role', 'student')->count();
+            $data['nbclients'] = User::where('user_role', 'user')->count();
 
-            $t = [];
-            foreach ($mobile_money as $el) {
-                if ($el->devise == 'CDF') {
-                    $t[] = v($el->montant_cdf, 'CDF');
-                } elseif ($el->devise == 'USD') {
-                    $t[] = v($el->montant_usd, 'USD');
+            $tp = Project::orderBy('id', 'desc')->limit(10)->get();
+            $d = [];
+            foreach ($tp as $el) {
+                $o = (object)$el->toArray();
+                $o->budget = v($el->budget, 'CDF');
+                $o->startdate = $el->startdate?->format('Y-m-d H:i');
+                $o->enddate = $el->enddate?->format('Y-m-d H:i');
+                $perc = 100;
+                $task1 = $el->tasks()->where('status', 1)->count();
+                $task0 = $el->tasks()->where('status', 0)->count();
+                $tot = $task0 + $task1;
+                if ($tot) {
+                    $perc = (int) (($task1 / $tot) * 100);
                 }
+                $o->progress = $perc;
+                $d[] = $o;
             }
-            $mobile_money = $t;
-
-            $t = [];
-            foreach ($carte_bancaire as $el) {
-                if ($el->devise == 'CDF') {
-                    $t[] = v($el->montant_cdf, 'CDF');
-                } elseif ($el->devise == 'USD') {
-                    $t[] = v($el->montant_usd, 'USD');
-                }
-            }
-            $carte_bancaire = $t;
+            $data['recentproject'] = $d;
         }
 
         $lab = ['Jan', 'Fev', 'Mar', 'Avr', 'Mai', 'Jui', 'Juil', 'Aou', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-        $cashtab = [];
-        $illicotab = [];
-        $mobiletab = [];
-        $cartetab = [];
+        $protab = [];
+        $prooktab = [];
+        $prononoktab = [];
+        // $cartetab = [];
+
         foreach (range(1, 12) as $k => $m) {
-            $cash2 = Depot::selectRaw('sum(montant_usd) as montant_usd')->whereMonth('date', $m)->where('type', 'cash');
-            $illico_cash2 = Depot::selectRaw('sum(montant_usd) as montant_usd')->whereMonth('date', $m)->where('type', 'illico_cash');
-            $mobile_money2 = Depot::selectRaw('sum(montant_usd) as montant_usd')->whereMonth('date', $m)->where('type', 'mobile_money');
-            $carte_bancaire2 = Depot::selectRaw('sum(montant_usd) as montant_usd')->whereMonth('date', $m)->where('type', 'carte_bancaire');
+            $protab2 = Project::whereMonth('startdate', $m)->count();
+            $prooktab2 = Project::where('status', 1)->whereMonth('startdate', $m)->count();
+            $prononoktab2 = Project::where('status', 0)->whereMonth('startdate', $m)->count();
 
-            if ('admin' == $user->user_role) {
-                //
-            } elseif ('user' == $user->user_role) {
-                $profil = $user->profils()->first();
-                $cash2 = $cash2->where('profil_id', $profil->id);
-                $illico_cash2 = $illico_cash2->where('profil_id', $profil->id);
-                $mobile_money2 = $mobile_money2->where('profil_id', $profil->id);
-                $carte_bancaire2 = $carte_bancaire2->where('profil_id', $profil->id);
-            } else if ('agent' == $user->user_role) {
-                $cash2 = $cash2->where('users_id', $user->id);
-                $illico_cash2 = $illico_cash2->where('users_id', $user->id);
-                $mobile_money2 = $mobile_money2->where('users_id', $user->id);
-                $carte_bancaire2 = $carte_bancaire2->where('users_id', $user->id);
-            } else {
-                abort(403);
-            }
+            // if ('admin' == $user->user_role) {
+            //     //
+            // } elseif ('user' == $user->user_role) {
+            //     $profil = $user->profils()->first();
+            //     $cash2 = $cash2->where('profil_id', $profil->id);
+            //     $illico_cash2 = $illico_cash2->where('profil_id', $profil->id);
+            //     $mobile_money2 = $mobile_money2->where('profil_id', $profil->id);
+            //     $carte_bancaire2 = $carte_bancaire2->where('profil_id', $profil->id);
+            // } else if ('agent' == $user->user_role) {
+            //     $cash2 = $cash2->where('users_id', $user->id);
+            //     $illico_cash2 = $illico_cash2->where('users_id', $user->id);
+            //     $mobile_money2 = $mobile_money2->where('users_id', $user->id);
+            //     $carte_bancaire2 = $carte_bancaire2->where('users_id', $user->id);
+            // } else {
+            //     abort(403);
+            // }
 
-            $cash2 = $cash2->get();
-            $illico_cash2 = $illico_cash2->get();
-            $mobile_money2 = $mobile_money2->get();
-            $carte_bancaire2 = $carte_bancaire2->get();
+            $t = (float) $protab2;
+            $protab[] = (object) ['x' => $lab[$k], 'y' => $t];
 
-            $t = (float) $cash2[0]->montant_usd;
-            $cashtab[] = (object) ['x' => $lab[$k], 'y' => $t];
+            $t = (float) $prooktab2;
+            $prooktab[] = (object) ['x' => $lab[$k], 'y' => $t];
 
-            $t = (float) $illico_cash2[0]->montant_usd;
-            $illicotab[] = (object) ['x' => $lab[$k], 'y' => $t];
+            $t = (float) $prononoktab2;
+            $prononoktab[] = (object) ['x' => $lab[$k], 'y' => $t];
 
-            $t = (float) $mobile_money2[0]->montant_usd;
-            $mobiletab[] = (object) ['x' => $lab[$k], 'y' => $t];
-
-            $t = (float) $carte_bancaire2[0]->montant_usd;
-            $cartetab[] = (object) ['x' => $lab[$k], 'y' => $t];
         }
 
+        // $series[] = (object) [
+        //     "type" => 'line',
+        //     'name' => 'Carte_bancaire',
+        //     'data' => $cartetab
+        // ];
         $series[] = (object) [
             "type" => 'line',
-            'name' => 'Carte_bancaire',
-            'data' => $cartetab
+            'name' => 'Projets en cours',
+            'data' => $prononoktab
         ];
         $series[] = (object) [
             "type" => 'line',
-            'name' => 'Mobile_money',
-            'data' => $mobiletab
-        ];
-        $series[] = (object) [
-            "type" => 'line',
-            'name' => 'Illico_cash',
-            'data' => $illicotab
+            'name' => 'Projets Fini',
+            'data' => $prooktab
         ];
         $series[] = (object) [
             "type" => 'area',
-            'name' => 'Cash',
-            'data' => $cashtab
+            'name' => 'Projets',
+            'data' => $protab
         ];
 
-        $data = [];
-        if ('admin' == $user->user_role) {
-            $data['nbchauffeurs'] = $nbchauffeurs;
-            $data['nbagents'] = $nbagents;
-            $data['nbadmins'] = $nbadmins;
-            $data['topdrivers'] = $topdrivers;
-
-            $data['cash'] = $cash;
-            $data['illico_cash'] = $illico_cash;
-            $data['carte_bancaire'] = $carte_bancaire;
-            $data['mobile_money'] = $mobile_money;
-        }
-
-        if ('user' == $user->user_role) {
-            $profil = auth()->user()->profils()->first();
-            $data['solde_usd']  = v($profil->solde_usd, 'USD');
-            $data['solde_cdf']  = v($profil->solde_cdf, 'CDF');
-        }
-
-        $data['cemois'] = date('F');
-        $data['recenttrans'] = $recenttrans;
-        $data['transchart'] = $series;
+        $data['chart001'] = $series;
 
         return $data;
     }

@@ -3,8 +3,9 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use App\Models\Categorie;
+use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
 
 class CategoryAPIController extends Controller
@@ -16,8 +17,13 @@ class CategoryAPIController extends Controller
      */
     public function index()
     {
-        $data = Categorie::orderBy('categorie')->withCount('users')->get();
-
+        $t = Category::orderBy('category')->withCount('products')->get();
+        $data = [];
+        foreach ($t as $el) {
+            $o = (object)$el->toArray();
+            $o->image = userimage($el);
+            $data[] = $o;
+        }
         return [
             'success' => true,
             'data' => $data
@@ -33,7 +39,7 @@ class CategoryAPIController extends Controller
     public function store(Request $request)
     {
         $rules =  [
-            'categorie' => 'required|unique:categorie',
+            'category' => 'required|unique:category',
         ];
 
         $validator = Validator::make(request()->all(), $rules);
@@ -44,7 +50,10 @@ class CategoryAPIController extends Controller
             ];
         }
         $data  = $validator->validated();
-        Categorie::create($data);
+        if ($request->hasFile('image')) {
+            $data['image'] = request()->file('image')->store('image', 'public');
+        }
+        Category::create($data);
 
         return ['success' => true, 'message' => 'Catégorie créé.'];
     }
@@ -52,10 +61,10 @@ class CategoryAPIController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Categorie  $categorie
+     * @param  \App\Models\Category  $category
      * @return \Illuminate\Http\Response
      */
-    public function show(Categorie $categorie)
+    public function show(Category $category)
     {
         //
     }
@@ -64,13 +73,13 @@ class CategoryAPIController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Categorie  $categorie
+     * @param  \App\Models\Category  $category
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Categorie $category)
+    public function update(Request $request, Category $category)
     {
         $rules =  [
-            'categorie' => 'required|unique:categorie,categorie,' . $category->id,
+            'category' => 'required|unique:category,category,' . $category->id,
         ];
 
         $validator = Validator::make(request()->all(), $rules);
@@ -81,6 +90,10 @@ class CategoryAPIController extends Controller
             ];
         }
         $data  = $validator->validated();
+        if ($request->hasFile('image')) {
+            File::delete('storage/' . $category->image);
+            $data['image'] = request()->file('image')->store('image', 'public');
+        }
         $category->update($data);
 
         return ['success' => true, 'message' => 'Catégorie mise à jour.'];
@@ -89,16 +102,16 @@ class CategoryAPIController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Categorie  $categorie
+     * @param  \App\Models\Category  $category
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Categorie $category)
+    public function destroy(Category $category)
     {
-        $n = $category->users()->count();
+        $n = $category->products()->count();
         if ($n > 0) {
-            return ['success' => false, 'message' => 'Catégorie associée à ' . $n . 'utilisateurs.'];
+            return ['success' => false, 'message' => 'Catégorie associée à ' . $n . ' article(s).'];
         }
         $category->delete();
-        return ['success' => true, 'message' => 'Catégorie supprimé'];
+        return ['success' => true, 'message' => 'Catégorie supprimée'];
     }
 }

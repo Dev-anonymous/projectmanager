@@ -19,7 +19,7 @@
         <div class="main-content app-content">
             <div class="container-fluid">
                 <div class="d-md-flex d-block align-items-center justify-content-between my-4 page-header-breadcrumb">
-                    <h1 class="page-title fw-semibold fs-18 mb-0">Dashboard</h1>
+                    <h1 class="page-title fw-semibold fs-18 mb-0"></h1>
                     <div class="ms-md-1 ms-0">
                         <nav>
                             <ol class="breadcrumb mb-0">
@@ -38,105 +38,79 @@
                     <div class="col-xxl-6 col-xl-12">
                         <div class="row">
                             <div class="col-lg-6 col-sm-6 col-md-6 col-xl-6">
-                                <div class="card custom-card">
-                                    <div class="card-body" style="min-height: 135px">
-                                        <div class="row">
-                                            <div
-                                                class="col-xxl-3 col-xl-2 col-lg-3 col-md-3 col-sm-4 col-4 d-flex align-items-center justify-content-center ecommerce-icon px-0">
-                                                <span class="rounded p-3 bg-primary-transparent">
-                                                    <i class="bx bx-wallet bx-md"></i>
-                                                </span>
+                                <a href="{{ route('admin.projects') }}">
+                                    <div class="card custom-card">
+                                        <div class="card-body d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <p class="mb-2">Projets Finis</p>
+                                                <h4 class="mb-0 fw-semibold mb-2" projetfini></h4>
                                             </div>
-                                            <div class="col-xxl-9 col-xl-10 col-lg-9 col-md-9 col-sm-8 col-8 px-0">
-                                                <div class="mb-2">CASH</div>
-                                                <div class="text-muted mb-1 fs-12">
-                                                    <span class="text-dark fw-semibold fs-20 lh-1 vertical-bottom"
-                                                        cashval>
-                                                    </span>
-                                                </div>
-                                                <div>
-                                                    <span class="fs-12 mb-0" cemois></span>
-                                                </div>
+                                            <div>
+                                                <span class="avatar avatar-md bg-primary p-2">
+                                                    <i class="ti ti-file-check fs-20 op-7"></i>
+                                                </span>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                </a>
                             </div>
                             <div class="col-lg-6 col-sm-6 col-md-6 col-xl-6">
-                                <div class="card custom-card">
-                                    <div class="card-body" style="min-height: 135px">
-                                        <div class="row">
-                                            <div
-                                                class="col-xxl-3 col-xl-2 col-lg-3 col-md-3 col-sm-4 col-4 d-flex align-items-center justify-content-center ecommerce-icon secondary  px-0">
-                                                <span class="rounded p-3 bg-primary-transparent">
-                                                    <i class="bx bx-wallet bx-md"></i>
-                                                </span>
+                                <a href="{{ route('admin.projects') }}">
+                                    <div class="card custom-card">
+                                        <div class="card-body d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <p class="mb-2">Projets en retard</p>
+                                                <h4 class="mb-0 fw-semibold mb-2" projetenretard></h4>
                                             </div>
-                                            <div class="col-xxl-9 col-xl-10 col-lg-9 col-md-9 col-sm-8 col-8 px-0">
-                                                <div class="mb-2">ILLICO CASH</div>
-                                                <div class="text-muted mb-1 fs-12">
-                                                    <span class="text-dark fw-semibold fs-20 lh-1 vertical-bottom"
-                                                        illicoval></span>
-                                                </div>
-                                                <div><span class="fs-12 mb-0" cemois></span>
-                                                </div>
+                                            <div>
+                                                <span class="avatar avatar-md bg-secondary p-2">
+                                                    <i class="ti ti-briefcase fs-20 op-7"></i>
+                                                </span>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                </a>
                             </div>
                             <div class="col-lg-6 col-sm-6 col-md-6 col-xl-6">
-                                <div class="card custom-card" style="min-height: 135px">
-                                    <div class="card-body">
-                                        <div class="row">
-                                            <div
-                                                class="col-xxl-3 col-xl-2 col-lg-3 col-md-3 col-sm-4 col-4 d-flex align-items-center justify-content-center ecommerce-icon success px-0">
-                                                <span class="rounded p-3 bg-success-transparent">
-                                                    <i class="bx bx-wallet bx-md"></i>
-                                                </span>
+                                <a href="{{ route('admin.projects') }}">
+                                    <div class="card custom-card">
+                                        <div class="card-body d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <p class="mb-2">Total Projets</p>
+                                                <h4 class="mb-0 fw-semibold mb-2" totalprojet></h4>
                                             </div>
-                                            <div class="col-xxl-9 col-xl-10 col-lg-9 col-md-9 col-sm-8 col-8 px-0">
-                                                <div class="mb-2">CARTE BANCAIRE</div>
-                                                <div class="text-muted mb-1 fs-12">
-                                                    <span class="text-dark fw-semibold fs-20 lh-1 vertical-bottom"
-                                                        carteval></span>
-                                                </div>
-                                                <div><span class="fs-12 mb-0" cemois></span>
-                                                </div>
+                                            <div>
+                                                <span class="avatar avatar-md bg-success p-2">
+                                                    <i class="ti ti-album fs-20 op-7"></i>
+                                                </span>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                </a>
                             </div>
                             <div class="col-lg-6 col-sm-6 col-md-6 col-xl-6">
-                                <div class="card custom-card">
-                                    <div class="card-body" style="min-height: 135px">
-                                        <div class="row">
-                                            <div
-                                                class="col-xxl-3 col-xl-2 col-lg-3 col-md-3 col-sm-4 col-4 d-flex align-items-center justify-content-center ecommerce-icon warning px-0">
-                                                <span class="rounded p-3 bg-warning-transparent">
-                                                    <i class="bx bx-wallet bx-md"></i>
-                                                </span>
+                                <a href="{{ route('admin.projects') }}">
+                                    <div class="card custom-card">
+                                        <div class="card-body d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <p class="mb-2">Projets en cours</p>
+                                                <h4 class="mb-0 fw-semibold mb-2" projetencours></h4>
                                             </div>
-                                            <div class="col-xxl-9 col-xl-10 col-lg-9 col-md-9 col-sm-8 col-8 px-0">
-                                                <div class="mb-2">MOBILE MONEY</div>
-                                                <div class="text-muted mb-1 fs-12">
-                                                    <span class="text-dark fw-semibold fs-20 lh-1 vertical-bottom"
-                                                        mobileval></span>
-                                                </div>
-                                                <div><span class="fs-12 mb-0" cemois></span>
-                                                </div>
+                                            <div>
+                                                <span class="avatar avatar-md bg-warning p-2">
+                                                    <i class="ti ti-chart-pie-2 fs-20 op-7"></i>
+                                                </span>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                </a>
                             </div>
 
                             <div class="col-xl-12">
                                 <div class="card custom-card">
                                     <div class="card-header justify-content-between">
                                         <div class="card-title">
-                                            Transactions Récentes
+                                            Projets Récents
                                         </div>
                                     </div>
                                     <div class="card-body" style="height: 510px; overflow: auto;">
@@ -152,10 +126,10 @@
                             <div class="col-xl-12">
                                 <div class="card custom-card">
                                     <div class="card-header justify-content-between">
-                                        <div class="card-title">Transactions</div>
+                                        <div class="card-title">Statistiques annuelles des projets</div>
                                     </div>
                                     <div class="card-body">
-                                        <div id="transchart"></div>
+                                        <div id="chart001"></div>
                                     </div>
                                 </div>
                             </div>
@@ -177,7 +151,7 @@
                                                     <div
                                                         class="ps-4 py-3 pe-3 text-center border-end border-inline-end-dashed">
                                                         <span
-                                                            class="text-muted fs-12 mb-1 crm-lead-legend mobile d-inline-block">Clients
+                                                            class="text-muted fs-12 mb-1 crm-lead-legend mobile d-inline-block">Utilisateurs
                                                         </span>
                                                         <div>
                                                             <span class="fs-16 fw-semibold" nbchauffeurs></span>
@@ -186,10 +160,10 @@
                                                 </a>
                                             </div>
                                             <div class="col p-0">
-                                                <a href="{{ route('admin.agents') }}">
+                                                <a href="{{ route('admin.students') }}">
                                                     <div class="p-3 text-center border-end border-inline-end-dashed">
                                                         <span
-                                                            class="text-muted fs-12 mb-1 crm-lead-legend desktop d-inline-block">Agents
+                                                            class="text-muted fs-12 mb-1 crm-lead-legend desktop d-inline-block">Etudiants
                                                         </span>
                                                         <div><span class="fs-16 fw-semibold" nbagents></span></div>
                                                     </div>
@@ -219,7 +193,7 @@
                         <div class="card custom-card">
                             <div class="card-header justify-content-between">
                                 <div class="card-title">
-                                    Top clients
+                                    Top projets
                                 </div>
                             </div>
                             <div class="card-body">
@@ -227,11 +201,10 @@
                                     <table class="table text-nowrap table-hover" table>
                                         <thead>
                                             <tr>
-                                                <th scope="col">Client</th>
-                                                <th scope="col">Email</th>
-                                                <th scope="col">Tel</th>
-                                                <th scope="col">Solde USD</th>
-                                                <th scope="col">Solde CDF</th>
+                                                <th scope="col">Projet</th>
+                                                <th scope="col">Budget</th>
+                                                <th scope="col">Progression</th>
+                                                <th scope="col">Date</th>
                                             </tr>
                                         </thead>
                                         <tbody></tbody>
@@ -241,7 +214,7 @@
                             <div class="card-footer">
                                 <div class="d-flex align-items-center">
                                     <div>
-                                        <a href="{{ route('admin.users') }}">
+                                        <a href="{{ route('admin.projects') }}">
                                             Tout voir <i class="bi bi-arrow-right ms-2 fw-semibold"></i>
                                         </a>
                                     </div>
@@ -273,43 +246,47 @@
                 $.ajax({
                     'url': '{{ route('dash.index') }}',
                     success: function(data) {
-                        $('[nbchauffeurs]').html(data.nbchauffeurs);
-                        $('[nbadmins]').html(data.nbadmins);
-                        $('[nbagents]').html(data.nbagents);
+                        $('[projetenretard]').html(data.projetenretard);
+                        $('[projetencours]').html(data.projetencours);
+                        $('[projetfini]').html(data.projetfini);
+                        $('[totalprojet]').html(data.totalprojet);
 
-                        var series = [data.nbchauffeurs, data.nbagents, data.nbadmins];
+                        var series = [data.nbclients, data.nbstudents, data.nbadmins];
 
                         cmptgraph.updateSeries(series);
 
-                        var transchartseries = data.transchart;
-                        transchart.updateSeries(transchartseries);
+                        chart001.updateSeries(data.chart001);
 
                         var html = '';
-                        var topdrivers = data.topdrivers;
-                        $(topdrivers).each(function(i, e) {
+                        var topproject = data.topproject;
+                        $(topproject).each(function(i, e) {
+                            var cl = 'success';
+                            if (e.progress < 50) {
+                                cl = 'danger';
+                            }
+                            if (e.progress >= 50 && e.progress <= 99) {
+                                cl = 'warning';
+                            }
                             html += `
                                 <tr>
                                     <td class='p-2'>
-                                        <div class="d-flex align-items-center">
-                                            <div class="me-2 lh-1">
-                                                <span class="avatar avatar-sm">
-                                                    <img src="${e.image}" alt="">
-                                                </span>
+                                        <span class="fw-semibold">${e.name}</span>
+                                    </td>
+                                    <td class='p-2'>
+                                        <span class="fw-semibold">${e.budget}</span>
+                                    </td>
+                                    <td>
+                                        <div class="task-details-progress">
+                                            <div class="d-flex align-items-center">
+                                                <div class="progress progress-xs progress-animate flex-fill me-2" role="progressbar" aria-valuenow="${e.progress}" aria-valuemin="0" aria-valuemax="100">
+                                                    <div class="progress-bar bg-${cl}" style="width: ${e.progress}%"></div>
+                                                </div>
+                                                <div class="text-muted fs-11">${e.progress}%</div>
                                             </div>
-                                            <div class="fs-14">${e.name}</div>
                                         </div>
                                     </td>
                                     <td class='p-2'>
-                                        <span class="fw-semibold">${e.email}</span>
-                                    </td>
-                                    <td class='p-2'>
-                                        <span class="fw-semibold">${e.phone}</span>
-                                    </td>
-                                    <td class='p-2'>
-                                        <span class="fw-semibold">${e.solde_usd}</span>
-                                    </td>
-                                    <td class='p-2'>
-                                        <span class="fw-semibold">${e.solde_cdf}</span>
+                                        <span class="fw-semibold">${e.startdate} ... ${e.enddate}</span>
                                     </td>
                                 </tr>
                             `;
@@ -317,31 +294,26 @@
                         $('[table]').find('tbody').html(html);
 
                         html = '';
-                        var recenttrans = data.recenttrans;
-                        $(recenttrans).each(function(i, e) {
+                        var recentproject = data.recentproject;
+                        $(recentproject).each(function(i, e) {
                             html += `
-                            <li class="mb-3" title="Montant reçu ${e.trans.montantrecu}">
+                            <li class="mb-3" >
                                 <div class="d-flex align-items-center justify-content-between">
                                     <div class="d-flex align-items-center">
                                         <div class="lh-1">
-                                            <span class="avatar avatar-md">
-                                                <img src="${e.user.image}"
-                                                    alt="">
-                                            </span>
+                                            <i class="bx bx-check-circle bx-sm"></i>
                                         </div>
                                         <div class="p-2">
-                                            <p class="mb-0 fw-semibold">${e.user.name}</p>
-                                            <p class="mb-0 fs-11 text-success fw-semibold">${e.user.phone}</p>
+                                            <p class="mb-0 fw-semibold">${e.name}</p>
+                                            <p class="mb-0 fs-11 text-success fw-semibold">${e.budget}</p>
                                         </div>
                                     </div>
                                     <div class="text-end">
                                         <p class="mb-0 fw-semibold">
-                                            ${e.trans.montant} <span class='text-danger'>(-${e.trans.commission}%)</span>
-                                            <br>
-                                            <b class='text-success'>+${e.trans.montantrecu}</b>
+                                            ${e.startdate}
                                         </p>
                                         <p class="mb-0 op-7 text-muted fs-11">
-                                            ${e.trans.type}
+                                            ${e.enddate}
                                         </p>
                                     </div>
                                 </div>
@@ -349,14 +321,6 @@
                             `;
                         });
                         $('[recenttrans]').html(html);
-
-                        $('[cemois]').html(data.cemois);
-                        $('[cashval]').html(data.cash.join('<br>'));
-                        $('[illicoval]').html(data.illico_cash.join('<br>'));
-                        $('[mobileval]').html(data.mobile_money.join('<br>'));
-                        $('[carteval]').html(data.carte_bancaire.join('<br>'));
-
-
                     },
                     error: function(res) {
 
@@ -378,7 +342,7 @@
                     height: 290,
                     type: "pie",
                 },
-                labels: ["Clients", "Agents", "Admins"],
+                labels: ["Clients", "Etudiants", "Admins"],
                 theme: {
                     monochrome: {
                         enabled: true,
@@ -685,18 +649,18 @@
                     },
                 },
                 yaxis: {
-                    labels: {
-                        formatter: function(value) {
-                            return "$ " + value;
-                        }
-                    },
+                    // labels: {
+                    //     formatter: function(value) {
+                    //         return "$ " + value;
+                    //     }
+                    // },
                 },
                 tooltip: {
-                    y: [{
-                        formatter: function(e) {
-                            return void 0 !== e ? "$" + e.toFixed(3) : e
-                        }
-                    }, ]
+                    // y: [{
+                    //     formatter: function(e) {
+                    //         return void 0 !== e ? "$" + e.toFixed(3) : e
+                    //     }
+                    // }, ]
                 },
                 legend: {
                     show: true,
@@ -707,8 +671,8 @@
                     }
                 }
             };
-            var transchart = new ApexCharts(document.querySelector("#transchart"), options2);
-            transchart.render();
+            var chart001 = new ApexCharts(document.querySelector("#chart001"), options2);
+            chart001.render();
         })
     </script>
 

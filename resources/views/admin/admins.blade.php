@@ -19,7 +19,7 @@
         <div class="main-content app-content">
             <div class="container-fluid">
                 <div class="d-md-flex d-block align-items-center justify-content-between my-4 page-header-breadcrumb">
-                    <h1 class="page-title fw-semibold fs-18 mb-0">Administrateurs</h1>
+                    <h1 class="page-title fw-semibold fs-18 mb-0"></h1>
                     <div class="ms-md-1 ms-0">
                         <nav>
                             <ol class="breadcrumb mb-0">
@@ -245,8 +245,8 @@
                             <td>${user.email??'-'}</td>
                             <td>
                                 <div class='d-flex justify-content-end'>
-                                    <button class="btn btn-primary btn-sm m-1" data="${escape(JSON.stringify(user))}"  value="${user.id}" bedit>Modifier</button>
-                                    <button class="btn btn-outline-danger btn-sm m-1"  value="${user.id}" bdel >Supprimer</button>
+                                    <button class="btn btn-primary btn-sm m-1" data="${escape(JSON.stringify(user))}"  value="${user.id}" bedit><i class='bx bx-edit'></i></button>
+                                    <button class="btn btn-outline-danger btn-sm m-1"  value="${user.id}" bdel ><i class='bx bx-trash'></i></button>
                                 </div>
                             </td>
                         </tr>
