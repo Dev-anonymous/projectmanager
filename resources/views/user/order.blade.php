@@ -116,7 +116,7 @@
                 </div>
             </div>
         @endforeach
-
+        <x-footer />
     </div>
 
     <div id="responsive-overlay"></div>
