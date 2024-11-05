@@ -580,6 +580,9 @@
             $('#search').keyup(function() {
                 var v = this.value;
                 if (v.trim().length == 0) {
+                    var url_s = new URL(location.href);
+                    var u = url_s.searchParams.set('q', '');
+                    window.history.pushState({}, null, url_s.href);
                     this.value = '';
                 }
 
