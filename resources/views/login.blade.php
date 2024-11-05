@@ -30,7 +30,7 @@
                     </a>
                 </div>
                 <div class="card custom-card">
-                    <div class="card-body p-5">
+                    <div class="card-body p-5" logcard>
                         <p class="h5 fw-semibold mb-2 text-center">Connexion</p>
                         <p class="mb-4 text-muted op-7 fw-normal text-center">{{ config('app.name') }}</p>
                         <div class="row gy-3">
@@ -72,26 +72,59 @@
                                         Connexion
                                     </button>
                                 </div>
+                                <p class="fs-12 text-muted mt-3">Pas de compte ?
+                                    <a href="#" singup class="text-primary">Créer un compte</a>
+                                </p>
                             </form>
                         </div>
-                        {{-- <div class="text-center">
-                            <p class="fs-12 text-muted mt-3">Dont have an account? <a href="sign-up-basic.html"
-                                    class="text-primary">Sign Up</a></p>
+
+                    </div>
+                    <div class="card-body p-5" signcard style="display: none">
+                        <p class="h5 fw-semibold mb-2 text-center">Créer un compte</p>
+                        <p class="mb-4 text-muted op-7 fw-normal text-center">{{ config('app.name') }}</p>
+                        <div class="row gy-3">
+                            <form action="#" id="flcmpt">
+                                <div class="col-xl-12">
+                                    <label for="signin-username" class="form-label text-default">Nom complet</label>
+                                    <input required type="text" name="name" class="form-control form-control-lg"
+                                        id="signin-username" placeholder="Nom complet">
+                                </div>
+                                <div class="col-xl-12">
+                                    <label for="signin-username" class="form-label text-default">Email</label>
+                                    <input required type="email" name="email" class="form-control form-control-lg"
+                                        id="signin-username" placeholder="Email">
+                                </div>
+                                <div class="col-xl-12 mb-2">
+                                    <label class="form-label text-default">Téléphone</label>
+                                    <input required type="text" minlength="10" maxlength="10" name="phone"
+                                        class="form-control form-control-sm phone" placeholder="Téléphone, Ex: 099xxx">
+                                </div>
+                                <div class="col-xl-12 mb-2">
+                                    <label for="signin-password" class="form-label text-default d-block">Mot de passe
+                                    </label>
+                                    <div class="input-group">
+                                        <input required type="password" name="password"
+                                            class="form-control form-control-lg" id="signin-password"
+                                            placeholder="Mot de passe">
+                                        <button class="btn btn-light" type="button"
+                                            onclick="createpassword('signin-password',this)" id="button-addon2"><i
+                                                class="ri-eye-line align-middle"></i></button>
+                                    </div>
+                                    <div class="mt-2">
+                                        <div id="rep"></div>
+                                    </div>
+                                </div>
+                                <div class="col-xl-12 d-grid mt-2">
+                                    <button type="submit" class="btn btn-lg btn-primary">
+                                        <span></span>
+                                        Créer mon compte
+                                    </button>
+                                </div>
+                                <p class="fs-12 text-muted mt-3">
+                                    <a href="#" singin class="text-primary">Se connecter</a>
+                                </p>
+                            </form>
                         </div>
-                        <div class="text-center my-3 authentication-barrier">
-                            <span>OR</span>
-                        </div>
-                        <div class="btn-list text-center">
-                            <button class="btn btn-icon btn-light">
-                                <i class="ri-facebook-line fw-bold text-dark op-7"></i>
-                            </button>
-                            <button class="btn btn-icon btn-light">
-                                <i class="ri-google-line fw-bold text-dark op-7"></i>
-                            </button>
-                            <button class="btn btn-icon btn-light">
-                                <i class="ri-twitter-x-line fw-bold text-dark op-7"></i>
-                            </button>
-                        </div> --}}
                     </div>
                 </div>
             </div>
@@ -101,6 +134,7 @@
     <script src="{{ asset('assets/libs/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('assets/js/jq.min.js') }}"></script>
     <script src="{{ asset('assets/js/show-password.js') }}"></script>
+    <script src="{{ asset('assets/js/jquery.mask.min.js') }}"></script>
 
     <script>
         @if (!Auth::check())
@@ -113,13 +147,17 @@
                 'Accept': 'application/json'
             }
         });
-        $('[logout]').click(function() {
-            var rl = $(this);
-            rl.closest('li').html('<span class="fa fa-spinner fa-spin text-white fa-2x mt-2"></span>');
-            // $.post('{{ route('auth-logout') }}', function() {
-            //     location.reload();
-            // })
-        })
+
+        $('.phone').mask('0000000000');
+
+        $('[singup]').click(function() {
+            $('[logcard]').stop().hide();
+            $('[signcard]').stop().fadeIn('slow');
+        });
+        $('[singin]').click(function() {
+            $('[signcard]').stop().hide();
+            $('[logcard]').stop().fadeIn('slow');
+        });
     </script>
 
     <script>
@@ -147,6 +185,43 @@
                             setTimeout(() => {
                                 location.reload();
                             }, 2000);
+                        } else {
+                            btn.attr('disabled', false);
+                            rep.removeClass().addClass('text-danger');
+                        }
+                        btn.find('span').removeClass();
+                        rep.html(r.message);
+                    },
+                    error: function(r) {
+                        btn.attr('disabled', false);
+                        alert("une erreur s'est produite");
+                    }
+                });
+            });
+
+            $('#flcmpt').submit(function() {
+                event.preventDefault();
+                var form = $(this);
+                var rep = $('#rep', form);
+                rep.html('');
+
+                var btn = $(':submit', form);
+                btn.attr('disabled', true);
+                btn.find('span').removeClass().addClass('bx bx-spin bx-loader');
+                var d = form.serialize();
+
+                $.ajax({
+                    type: 'post',
+                    url: '{{ route('auth-new') }}',
+                    data: d,
+                    success: function(r) {
+                        if (r.success) {
+                            btn.hide();
+                            rep.removeClass().addClass('text-success');
+                            localStorage.setItem('_t', r.token);
+                            setTimeout(() => {
+                                location.assign('{{ route('home') }}');
+                            }, 3000);
                         } else {
                             btn.attr('disabled', false);
                             rep.removeClass().addClass('text-danger');

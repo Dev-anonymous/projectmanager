@@ -74,7 +74,7 @@
                 <div class="modal-content modal-content-demo">
                     <div class="modal-header">
                         <h6 class="modal-title">Nouvel article </h6><button aria-label="Close" class="btn-close"
-                            data-bs-dismiss="modal"></button>
+                            data-bs-dismiss="modal" type="button"></button>
                     </div>
                     <form action="#" id="f-add">
                         <div class="modal-body text-start">
@@ -108,11 +108,12 @@
                             <div class="col-xl-12">
                                 <label for="text-area" class="form-label">Image</label>
                                 <input type="file" required class="filepond1" name="image" multiple
-                                    accept="image/png, image/jpeg" data-max-file-size="500KB" data-max-files="5">
+                                    accept="image/png, image/jpeg" data-max-file-size="500KB" data-max-files="20">
                             </div>
                             <div class="col-xl-12 mb-2">
                                 <label class="form-label text-default">Projet</label>
                                 <select name="project_id" id="" class="form-control">
+                                    <option value="">Aucun</option>
                                     @foreach ($project as $el)
                                         <option value="{{ $el->id }}">{{ $el->name }}</option>
                                     @endforeach
@@ -145,7 +146,7 @@
                 <div class="modal-content modal-content-demo">
                     <div class="modal-header">
                         <h6 class="modal-title">Modification </h6><button aria-label="Close" class="btn-close"
-                            data-bs-dismiss="modal"></button>
+                            data-bs-dismiss="modal" type="button"></button>
                     </div>
                     <form action="#" id="f-edit">
                         <div class="modal-body text-start">
@@ -180,7 +181,7 @@
                             <div class="col-xl-12">
                                 <label for="text-area" class="form-label">Image</label>
                                 <input type="file" class="filepond2" name="image" multiple
-                                    accept="image/png, image/jpeg" data-max-file-size="500KB" data-max-files="5">
+                                    accept="image/png, image/jpeg" data-max-file-size="500KB" data-max-files="20">
                             </div>
                             <div class="col-xl-12 mb-2">
                                 <label class="form-label text-default">Projet</label>
@@ -223,7 +224,7 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button class="btn btn-light btn-sm" data-bs-dismiss="modal">NON</button>
+                            <button class="btn btn-light btn-sm" data-bs-dismiss="modal" type="button">NON</button>
                             <button class="btn btn-primary btn-sm" type="submit"><span></span> OUI</button>
                         </div>
                     </form>
@@ -277,7 +278,7 @@
                             <td>${user.price}</td>
                             <td>${user.stock}</td>
                             <td>${user.forsale == 1 ? '<span class="badge bg-success">OUI</span>' : '<span class="badge bg-danger">NON</span>'}</td>
-                            <td>${user.description ?? ''}</td>
+                            <td class='text-wrap'>${user.description ?? ''}</td>
                             <td>
                                 <div class='d-flex justify-content-end'>
                                     <button class="btn btn-primary btn-sm m-1" data="${escape(JSON.stringify(user))}"  value="${user.id}" bedit><i class='bx bx-edit'></i></button>

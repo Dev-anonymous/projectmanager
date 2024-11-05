@@ -20,6 +20,10 @@ class ProjectAPIController extends Controller
     public function index()
     {
         $t = Project::orderBy('status')->orderBy('id', 'desc')->get();
+        $user = auth()->user();
+        if ($user->user_role == 'student') {
+            $t = $user->projects()->orderBy('status')->orderBy('id', 'desc')->get();
+        }
         $data = [];
 
         foreach ($t as $el) {

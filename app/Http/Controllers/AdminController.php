@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Categorie;
 use App\Models\Category;
+use App\Models\Commande;
 use App\Models\Exportation;
 use App\Models\Filiere;
 use App\Models\FiliereHasPromotion;
@@ -87,5 +88,11 @@ class AdminController extends Controller
         }
 
         return view('admin.projects', compact('students', 'project', 'category'));
+    }
+
+    function order()
+    {
+        $order =  Commande::orderBy('id', 'desc')->get();
+        return view('admin.order', compact('order'));
     }
 }

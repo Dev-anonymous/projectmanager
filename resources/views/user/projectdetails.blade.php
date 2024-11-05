@@ -105,13 +105,6 @@
                         <div class="card custom-card">
                             <div class="card-header d-flex justify-content-between">
                                 <div class="card-title">Taches</div>
-                                <div class="m-2">
-                                    <button
-                                        class="modal-effect btn btn-teal-light btn-border-down btn-sm btn-wave waves-effect waves-light"
-                                        data-bs-effect="effect-flip-vertical" data-bs-toggle="modal"
-                                        href="#mdl">Ajouter
-                                    </button>
-                                </div>
                             </div>
                             <div class="card-body">
                                 <div class="table-responsive">
@@ -124,7 +117,6 @@
                                                 <th>Etudiant</th>
                                                 <th>Description</th>
                                                 <th>Date Début/Fin</th>
-                                                <th></th>
                                             </tr>
                                         </thead>
                                         <tbody></tbody>
@@ -169,131 +161,6 @@
                 </div>
             </div>
         </div>
-
-        <div class="modal fade" id="mdl">
-            <div class="modal-dialog  text-center" role="document">
-                <div class="modal-content modal-content-demo">
-                    <div class="modal-header">
-                        <h6 class="modal-title">Nouvelle tache </h6><button aria-label="Close" class="btn-close"
-                            data-bs-dismiss="modal" type="button"></button>
-                    </div>
-                    <form action="#" id="f-add">
-                        <input type="hidden" name="project_id" value="{{ $project->id }}">
-                        <div class="modal-body text-start">
-                            <div class="col-xl-12">
-                                <label for="signin-username" class="form-label text-default">Tache (*)</label>
-                                <input required type="text" name="name"
-                                    class="form-control form-control-sm mb-2" id="signin-username">
-                            </div>
-                            <div class="col-xl-12">
-                                <label for="signin-username" class="form-label text-default">Description (*)</label>
-                                <textarea name="description" required rows="3" class="form-control form-control-sm  mb-2"></textarea>
-                            </div>
-                            <div class="col-xl-12">
-                                <label class="form-label text-default">Date début/Fin du
-                                    projet (*)</label>
-                                <div class="input-group">
-                                    <div class="input-group-text text-muted"> <i class="ri-calendar-line"></i> </div>
-                                    <input type="text" class="form-control daterange" placeholder="Date">
-                                </div>
-                            </div>
-                            <div class="col-xl-12 mb-2">
-                                <label class="form-label text-default">Etudiants</label>
-                                <select name="users_id[]" multiple id="" class="form-control" required>
-                                    @foreach ($students as $el)
-                                        <option value="{{ $el->id }}">{{ $el->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="mt-2">
-                                <div id="rep"></div>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button class="btn btn-light" data-bs-dismiss="modal" type="button">Fermer</button>
-                            <button class="btn btn-primary" type="submit"><span></span> Valider</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-
-        <div class="modal fade" id="editmdl">
-            <div class="modal-dialog modal-lg text-center" role="document">
-                <div class="modal-content modal-content-demo">
-                    <div class="modal-header">
-                        <h6 class="modal-title">Modification </h6><button aria-label="Close" class="btn-close"
-                            data-bs-dismiss="modal" type="button"></button>
-                    </div>
-                    <form action="#" id="f-edit">
-                        <input type="hidden" name="id">
-                        <div class="modal-body text-start">
-                            <div class="col-xl-12">
-                                <label for="signin-username" class="form-label text-default">Tache (*)</label>
-                                <input required type="text" name="name"
-                                    class="form-control form-control-sm mb-2" id="signin-username">
-                            </div>
-                            <div class="col-xl-12">
-                                <label for="signin-username" class="form-label text-default">Description (*)</label>
-                                <textarea name="description" required rows="3" class="form-control form-control-sm  mb-2"></textarea>
-                            </div>
-                            <div class="col-xl-12">
-                                <label class="form-label text-default">Date début/Fin du
-                                    projet (*)</label>
-                                <div class="input-group">
-                                    <div class="input-group-text text-muted"> <i class="ri-calendar-line"></i> </div>
-                                    <input type="text" class="form-control daterange" placeholder="Date">
-                                </div>
-                            </div>
-                            <div class="col-xl-12 mb-2">
-                                <label class="form-label text-default">Etudiants</label>
-                                <select name="users_id[]" multiple id="" class="form-control" required>
-                                    @foreach ($students as $el)
-                                        <option value="{{ $el->id }}">{{ $el->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="col-xl-12 mb-2">
-                                <div class="form-check mb-3">
-                                    <input class="form-check-input" type="checkbox" name="finish"
-                                        id="defaultCheck0003">
-                                    <label class="form-check-label text-muted fw-normal" for="defaultCheck0003">
-                                        Marquer la tache comme finie
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="mt-2">
-                                <div id="rep"></div>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button class="btn btn-light" data-bs-dismiss="modal" type="button">Fermer</button>
-                            <button class="btn btn-primary" type="submit"><span></span> Valider</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-        <div class="modal fade" id="delmdl">
-            <div class="modal-dialog  text-center" role="document">
-                <div class="modal-content modal-content-demo">
-                    <form action="#" id="fdel">
-                        <div class="modal-body text-start">
-                            <input type="hidden" name="id">
-                            <h3>Confirmer la suppression ?</h3>
-                            <div class="mt-2">
-                                <div id="rep"></div>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button class="btn btn-light btn-sm" data-bs-dismiss="modal" type="button">NON</button>
-                            <button class="btn btn-primary btn-sm" type="submit"><span></span> OUI</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-
         <x-footer />
     </div>
 
@@ -333,10 +200,6 @@
                             var btn = '';
                             if (0 == st) {
                                 s = '<span class="badge bg-warning">EN COURS</span>';
-                                btn = `
-                                    <button class="btn btn-primary btn-sm m-1" data="${escape(JSON.stringify(user))}"  value="${user.id}" bedit><i class='bx bx-edit'></i></button>
-                                    <button class="btn btn-outline-danger btn-sm m-1"  value="${user.id}" bdel ><i class='bx bx-trash'></i></button>
-                                `;
                             }
                             if (1 == st) {
                                 s = '<span class="badge bg-success">FINI</span>'
@@ -349,11 +212,6 @@
                             <td class="text-wrap">${user.users.join(', ')}</td>
                             <td class="text-wrap">${user.description ?? ''}</td>
                             <td>${user.startdate} ... ${user.enddate}</td>
-                            <td>
-                                <div class='d-flex justify-content-end'>
-                                    ${btn}
-                                </div>
-                            </td>
                         </tr>
                         `;
                         });

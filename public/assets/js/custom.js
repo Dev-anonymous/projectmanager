@@ -71,8 +71,9 @@
 
         button.addEventListener("click", () => {
             const el = document.createElement("p");
-            pickrContainerPrimary.appendChild(el);
-
+            try {
+                pickrContainerPrimary.appendChild(el);
+            } catch (error) {}
             /* Delete previous instance */
             if (nanoPickr) {
                 nanoPickr.destroyAndRemove();
@@ -83,40 +84,43 @@
                 btn.classList[btn === button ? "add" : "remove"]("active");
             }
 
-            /* Create fresh instance */
-            nanoPickr = new Pickr(
-                Object.assign(
-                    {
-                        el,
-                        theme,
-                        default: "#845adf",
-                    },
-                    config
-                )
-            );
+            try {
+                /* Create fresh instance */
+                nanoPickr = new Pickr(
+                    Object.assign(
+                        {
+                            el,
+                            theme,
+                            default: "#845adf",
+                        },
+                        config
+                    )
+                );
 
-            /* Set events */
-            nanoPickr.on("changestop", (source, instance) => {
-                let color = instance.getColor().toRGBA();
-                let html = document.querySelector("html");
-                html.style.setProperty(
-                    "--primary-rgb",
-                    `${Math.floor(color[0])}, ${Math.floor(
-                        color[1]
-                    )}, ${Math.floor(color[2])}`
-                );
-                /* theme color picker */
-                localStorage.setItem(
-                    "primaryRGB",
-                    `${Math.floor(color[0])}, ${Math.floor(
-                        color[1]
-                    )}, ${Math.floor(color[2])}`
-                );
-                updateColors();
-            });
+                /* Set events */
+                nanoPickr.on("changestop", (source, instance) => {
+                    let color = instance.getColor().toRGBA();
+                    let html = document.querySelector("html");
+                    html.style.setProperty(
+                        "--primary-rgb",
+                        `${Math.floor(color[0])}, ${Math.floor(
+                            color[1]
+                        )}, ${Math.floor(color[2])}`
+                    );
+                    /* theme color picker */
+                    localStorage.setItem(
+                        "primaryRGB",
+                        `${Math.floor(color[0])}, ${Math.floor(
+                            color[1]
+                        )}, ${Math.floor(color[2])}`
+                    );
+                    updateColors();
+                });
+            } catch (error) {}
         });
-
-        themeContainerPrimary.appendChild(button);
+        try {
+            themeContainerPrimary.appendChild(button);
+        } catch (error) {}
     }
     nanoButtons[0].click();
     /* for theme primary */
@@ -153,8 +157,9 @@
 
         button.addEventListener("click", () => {
             const el = document.createElement("p");
-            pickrContainerBackground.appendChild(el);
-
+            try {
+                pickrContainerBackground.appendChild(el);
+            } catch (error) {}
             /* Delete previous instance */
             if (nanoPickr1) {
                 nanoPickr1.destroyAndRemove();
@@ -165,63 +170,73 @@
                 btn.classList[btn === button ? "add" : "remove"]("active");
             }
 
-            /* Create fresh instance */
-            nanoPickr1 = new Pickr(
-                Object.assign(
-                    {
-                        el,
-                        theme,
-                        default: "#845adf",
-                    },
-                    config
-                )
-            );
+            try {
+                /* Create fresh instance */
+                nanoPickr1 = new Pickr(
+                    Object.assign(
+                        {
+                            el,
+                            theme,
+                            default: "#845adf",
+                        },
+                        config
+                    )
+                );
 
-            /* Set events */
-            nanoPickr1.on("changestop", (source, instance) => {
-                let color = instance.getColor().toRGBA();
-                let html = document.querySelector("html");
-                html.style.setProperty(
-                    "--body-bg-rgb",
-                    `${color[0]}, ${color[1]}, ${color[2]}`
-                );
-                document
-                    .querySelector("html")
-                    .style.setProperty(
-                        "--body-bg-rgb2",
+                /* Set events */
+                nanoPickr1.on("changestop", (source, instance) => {
+                    let color = instance.getColor().toRGBA();
+                    let html = document.querySelector("html");
+                    html.style.setProperty(
+                        "--body-bg-rgb",
+                        `${color[0]}, ${color[1]}, ${color[2]}`
+                    );
+                    document
+                        .querySelector("html")
+                        .style.setProperty(
+                            "--body-bg-rgb2",
+                            `${color[0] + 14}, ${color[1] + 14}, ${
+                                color[2] + 14
+                            }`
+                        );
+                    document
+                        .querySelector("html")
+                        .style.setProperty(
+                            "--light-rgb",
+                            `${color[0] + 14}, ${color[1] + 14}, ${
+                                color[2] + 14
+                            }`
+                        );
+                    document
+                        .querySelector("html")
+                        .style.setProperty(
+                            "--form-control-bg",
+                            `rgb(${color[0] + 14}, ${color[1] + 14}, ${
+                                color[2] + 14
+                            })`
+                        );
+                    localStorage.removeItem("bgtheme");
+                    updateColors();
+                    html.setAttribute("data-theme-mode", "dark");
+                    html.setAttribute("data-menu-styles", "dark");
+                    html.setAttribute("data-header-styles", "dark");
+                    document.querySelector(
+                        "#switcher-dark-theme"
+                    ).checked = true;
+                    localStorage.setItem(
+                        "bodyBgRGB",
+                        `${color[0]}, ${color[1]}, ${color[2]}`
+                    );
+                    localStorage.setItem(
+                        "bodylightRGB",
                         `${color[0] + 14}, ${color[1] + 14}, ${color[2] + 14}`
                     );
-                document
-                    .querySelector("html")
-                    .style.setProperty(
-                        "--light-rgb",
-                        `${color[0] + 14}, ${color[1] + 14}, ${color[2] + 14}`
-                    );
-                document
-                    .querySelector("html")
-                    .style.setProperty(
-                        "--form-control-bg",
-                        `rgb(${color[0] + 14}, ${color[1] + 14}, ${
-                            color[2] + 14
-                        })`
-                    );
-                localStorage.removeItem("bgtheme");
-                updateColors();
-                html.setAttribute("data-theme-mode", "dark");
-                html.setAttribute("data-menu-styles", "dark");
-                html.setAttribute("data-header-styles", "dark");
-                document.querySelector("#switcher-dark-theme").checked = true;
-                localStorage.setItem(
-                    "bodyBgRGB",
-                    `${color[0]}, ${color[1]}, ${color[2]}`
-                );
-                localStorage.setItem(
-                    "bodylightRGB",
-                    `${color[0] + 14}, ${color[1] + 14}, ${color[2] + 14}`
-                );
-            });
+                });
+            } catch (error) {}
         });
-        themeContainerBackground.appendChild(button);
+        try {
+            themeContainerBackground.appendChild(button);
+        } catch (error) {}
     }
     nanoButtons1[0].click();
     /* for theme background */
@@ -291,7 +306,11 @@
         }
     }
     let layoutSetting = document.querySelector(".layout-setting");
+try {
     layoutSetting.addEventListener("click", toggleTheme);
+} catch (error) {
+
+}
     /* header theme toggle */
 
     /* Choices JS */
@@ -299,11 +318,13 @@
         var genericExamples = document.querySelectorAll("[data-trigger]");
         for (let i = 0; i < genericExamples.length; ++i) {
             var element = genericExamples[i];
-            new Choices(element, {
-                allowHTML: true,
-                placeholderValue: "This is a placeholder set in the config",
-                searchPlaceholderValue: "Search",
-            });
+            try {
+                new Choices(element, {
+                    allowHTML: true,
+                    placeholderValue: "This is a placeholder set in the config",
+                    searchPlaceholderValue: "Search",
+                });
+            } catch (error) {}
         }
     });
     /* Choices JS */
@@ -542,7 +563,9 @@ const values = [
 ];
 const elements = document.querySelectorAll(".choices-images");
 elements.forEach(function (element) {
-    const choices = new Choices(element, {
-        choices: values,
-    });
+    try {
+        const choices = new Choices(element, {
+            choices: values,
+        });
+    } catch (error) {}
 });

@@ -17,6 +17,7 @@ class SystemsMiddleware
     public function handle(Request $request, Closure $next)
     {
         defaultdata();
+        completeTrans();
         return $next($request);
     }
 }

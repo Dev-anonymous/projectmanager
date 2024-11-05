@@ -46,83 +46,10 @@ class AppController extends Controller
         return [];
     }
 
-    function cpa()
-    {
-        $validator = Validator::make(request()->all(), [
-            'montant' => 'required',
-            'users_id' => 'required|exists:users,id',
-            'devise' => 'required|in:CDF,USD',
-        ]);
-
-        if ($validator->fails()) {
-            return [
-                'message' => implode(" ", $validator->errors()->all())
-            ];
-        }
-        $data  = $validator->validated();
-
-        $montant = str_replace([' ', ','], ['', '.'],  request('montant'));
-        $users_id = request('users_id');
-        $devise = request('devise');
-
-        if ($montant <= 0) {
-            return [
-                'message' => "Montant invalide"
-            ];
-        }
-
-        $chauffeur = User::find($users_id);
-        $profil = $chauffeur->profils()->first();
-        abort_if($chauffeur->user_role != 'user', 403);
-
-        $mcdf = change($montant, $devise, 'CDF');
-        $musd = change($montant, $devise, 'USD');
-
-        $agent = auth()->user();
-
-        DB::beginTransaction();
-        Depot::create([
-            'profil_id' => $profil->id,
-            'users_id' => $agent->id,
-            'agentname' => $agent->name,
-            'type' => 'cash',
-            'montant_cdf' => $mcdf,
-            'montant_usd' => $musd,
-            'commission' => COMMISSION,
-            'devise_depot' => $devise,
-            'ref' => $ref = transid($chauffeur),
-            'date' => nnow(),
-        ]);
-        $dev = strtolower($devise);
-        $profil->increment("solde_$dev", $montantrecu = commission($montant));
-
-        $montantrecu = v($montantrecu, $devise);
-
-        $commission = 100 * COMMISSION;
-        $montant = v($montant, $devise);
-
-        $phone = $profil->user->phone;
-
-        $txt = "Depot (CASH) de $montant (-$commission%)\nMontant recu : $montantrecu\nAgent : $agent->name\nTransID : $ref";
-        if ('yes' == getconfig('sms')) {
-            Pending::create(['to' => $phone, 'text' => $txt, 'retry' => 0]);
-        }
-
-        DB::commit();
-
-        return [
-            'success' => true,
-            'message' => "Transaction enregistrée.",
-            'ref' => $ref
-        ];
-    }
 
     function fpi()
     {
         $validator = Validator::make(request()->all(), [
-            'montant' => 'required',
-            'users_id' => 'required|exists:users,id',
-            'devise' => 'required|in:CDF,USD',
             'phone' => 'required|string|min:10|max:10',
         ], ['phone.required' => 'Saisissez le numéro Mobile Money']);
 
@@ -131,351 +58,150 @@ class AppController extends Controller
                 'message' => implode(" ", $validator->errors()->all())
             ];
         }
+        $phone = request('phone');
+        if (!isvalidenumber($phone)) {
+            return [
+                'message' => "Numéro de téléphone non valide"
+            ];
+        }
         $data  = $validator->validated();
 
-        $amount = str_replace([' ', ','], ['', '.'],  request('montant'));
-
-        if ($amount <= 0) {
-            return [
-                'message' =>   "Le montant de paiement $amount n'est pas valide."
+        $amount = 0;
+        $articles = [];
+        foreach (auth()->user()->carts()->get() as $el) {
+            $amount += $el->qty * $el->product->price;
+            $articles[] = (object) [
+                'id' => $el->product->id,
+                'name' => $el->product->name,
+                'price' => $el->product->price,
+                'qty' => $el->qty,
+                'total' => v($el->qty * $el->product->price, 'CDF'),
             ];
         }
 
-        $devise = request('devise');
+        $devise = 'CDF';
+
         if ($devise == 'CDF' && $amount < 500) {
             return [
                 'message' => 'Le montant minimum de paiement est de 500 FC'
             ];
         }
+        abort_if(!in_array(auth()->user()->user_role, ['user', 'student']), 403);
 
-        $phone = request('phone');
+        $pdata = compact('phone', 'devise', 'amount');
 
-        if (!isvalidenumber($phone)) {
-            return [
-                'message' => "Numéro de téléphone non valide"
-            ];
-        }
+        $myref = uniqid('TRANS.', true);
 
-        $chauffeur = User::find(request('users_id'));
-        $profil = $chauffeur->profils()->first();
-        abort_if($chauffeur->user_role != 'user', 403);
-        $ref = transid($chauffeur);
-        $mcdf = change($amount, $devise, 'CDF');
-        $musd = change($amount, $devise, 'USD');
-        $agent = auth()->user();
-
-        $payment_method = 'mobile_money';
-        $phone_number = request('phone');
-
-        $data = compact('payment_method', 'phone_number', 'devise', 'amount');
         $insertdata = [
-            'profil_id' => $profil->id,
-            'users_id' => $agent->id,
-            'agentname' => $agent->name,
-            'type' => $payment_method,
-            'montant_cdf' => $mcdf,
-            'montant_usd' => $musd,
-            'commission' => COMMISSION,
-            'devise_depot' => $devise,
-            'ref' => $ref,
+            'users_id' => auth()->user()->id,
+            'articles' => json_encode($articles),
+            'total_cdf' => $amount,
+            'ref' => $myref,
             'date' => nnow(),
         ];
-        $data['insertdata'] = $insertdata;
+        $pdata['insertdata'] = $insertdata;
 
         $fp = Pay::create([
-            'data' => json_encode($data),
-            'ref' => $ref,
+            'data' => json_encode($pdata),
+            'myref' => $myref,
             'failed' => 0,
             'saved' => 0,
-            'payment_method' => $payment_method,
             'date' => nnow(),
         ]);
 
-        $pn = "243" . ((int) $phone);
-        $rep = (object) ipf($devise, $amount, $pn, $ref);
 
-        if ($rep->status) {
-            $data['apiresponse'] = $rep->data;
-            $fp->update(['data' => json_encode($data)]);
+        $pn = "243" . ((int) $phone);
+        $rep = gopay_init_payment($amount, $devise, $pn, $myref);
+
+        if ($rep->success) {
+            $pdata['apiresponse'] = $rep->data;
+            $fp->update(['data' => json_encode($pdata), 'ref' => $rep->data->ref]);
         }
         return [
-            'success' => $rep->status,
+            'success' => $rep->success,
             'message' => $rep->message,
-            'ref' => $ref
+            'myref' => $myref
         ];
     }
     function fpc()
     {
-        $ref = request('ref');
-        $pay = Pay::where(compact('ref'))->first();
-        if ($pay) {
-            $ok =  false;
-            $saved = $pay->saved;
+        $myref = request()->myref;
+        $ok =  false;
+        $saved = 0;
+        $trans = Pay::where(['myref' => $myref])->lockForUpdate()->first();
 
-            $data = @json_decode($pay->data);
-            $orderNumber = @$data->apiresponse->orderNumber;
-            if ($orderNumber) {
-                $t = transaction_was_success($orderNumber);
-                if ($t === true) {
-                    savedata($pay);
-                    $ok = true;
-                } else {
-                    if ($t === false) {
-                        $pay->update(['saved' => 0, 'failed' => 1]);
-                    }
-                }
-            }
+        if (!$trans) {
+            return response([
+                'success' => false,
+                'message' => "Invalid ref"
+            ]);
+        };
 
-            if ($ok || $saved === 1 || @$pay->saved === 1) {
-                return response()->json([
-                    'success' => true,
-                    'message' => "Paiement effectuée avec succès.",
-                    'transaction' => ['status' => 'success']
-                ]);
-            } else {
-                return response()->json([
-                    'success' => false,
-                    'message' => "Aucune transaction trouvée.",
-                    'transaction' => ['status' => @$t === false ? 'failed' : 'pending']
-                ]);
+        $t = transaction_status($myref);
+        $status =   @$t->status;
+
+        if ($status === 'success') {
+            $saved = @Pay::where(['myref' => $myref])->first()->saved;
+            if ($saved !== 1) {
+                saveData($trans);
+                $ok =  true;
+                $trans->update(['failed' => 0]);
             }
+        } else if ($status === 'failed') {
+            $trans->update(['failed' => 1]);
+        }
+
+        if ($ok || $saved === 1 || @$trans->saved === 1) {
+            return response([
+                'success' => true,
+                'message' => 'Votre paiement est effectué avec succès.',
+                'transaction' => $t
+            ]);
+        } else {
+            $m = "Aucun paiement trouvé.";
+            return response([
+                'success' => false,
+                'message' => $m,
+                'transaction' => $t
+            ]);
         }
     }
 
-    function sti()
+    function newu()
     {
-        $validator = Validator::make(request()->all(), [
-            'montant' => 'required',
-            'users_id' => 'required|exists:users,id',
-            'devise' => 'required|in:CDF,USD',
-            'phone' => 'required|string|min:10|max:10',
-        ], ['phone.required' => 'Saisissez le numéro Illico Cash']);
+        $rules =  [
+            'name' => 'required',
+            'email' => 'required|email|unique:users',
+            'password' => 'required',
+            'phone' => 'required|max:10,min:10',
+        ];
+
+        $validator = Validator::make(request()->all(), $rules);
 
         if ($validator->fails()) {
             return [
                 'message' => implode(" ", $validator->errors()->all())
             ];
         }
-        $data  = $validator->validated();
-
-        $montant = str_replace([' ', ','], ['', '.'],  request('montant'));
-
-        if ($montant <= 0) {
-            return [
-                'message' =>   "Le montant de paiement $montant n'est pas valide."
-            ];
-        }
 
         $phone = request('phone');
-        $devise = request('devise');
-
         if (!isvalidenumber($phone)) {
             return [
                 'message' => "Numéro de téléphone non valide"
             ];
         }
-
-        $chauffeur = User::find(request('users_id'));
-        $profil = $chauffeur->profils()->first();
-        abort_if($chauffeur->user_role != 'user', 403);
-
-        $ref = transid($chauffeur);
-
-        $mcdf = change($montant, $devise, 'CDF');
-        $musd = change($montant, $devise, 'USD');
-
-        $agent = auth()->user();
-
-        $data = compact('phone', 'devise');
-        $insertdata = [
-            'profil_id' => $profil->id,
-            'users_id' => $agent->id,
-            'agentname' => $agent->name,
-            'type' => 'illico_cash',
-            'montant_cdf' => $mcdf,
-            'montant_usd' => $musd,
-            'commission' => COMMISSION,
-            'devise_depot' => $devise,
-            'ref' => $ref = transid($chauffeur),
-            'date' => nnow(),
-        ];
-        $data['insertdata'] = $insertdata;
-
-        try {
-            $rep = iinit($phone, $montant, $devise, $ref);
-        } catch (\Throwable $th) {
-            // throw $th;
-        }
-
-        $resp['success'] = $ok = @$rep->respcode === '00';
-        if (@$rep->respcode != '00') {
-            $resp['message'] = "Echec de transaction : " . @$rep->respcodedesc;
-        } else {
-            $resp['message'] = "Transaction initialisée. veuillez saisir l'OTP.";
-        }
-        $resp['ref'] = $ref;
-        if ($ok) {
-            $data['apiresponse'] = $rep;
-            Pay::create([
-                'data' => json_encode($data),
-                'ref' => $ref,
-                'failed' => 0,
-                'saved' => 0,
-                'payment_method' => 'illico_cash',
-            ]);
-        }
-
-        return $resp;
-    }
-
-    function cmi()
-    {
-        $ref = request('ref');
-        $otp = request('otp');
-
-        $pay = Pay::where(compact('ref'))->first();
-        if ($pay) {
-            $user = @json_decode($pay->user);
-            $referencenumber = @$user->apiresponse->referencenumber;
-            try {
-                $rep = cmi($referencenumber, $otp);
-            } catch (\Throwable $th) {
-                //throw $th;
-            }
-
-            $resp['success'] = $ok = @$rep->respcode === '00';
-
-            if ($ok) {
-                savedata($pay);
-                $resp['message'] = "Paiement approuvé.";
-            } else {
-                $resp['message'] = "Echec de paiement, l'OTP saisi est invalide.";
-            }
-            return $resp;
-        }
-    }
-
-    function smc()
-    {
-        $validator = Validator::make(request()->all(), [
-            'montant' => 'required',
-            'card_number' => 'required|min:16',
-            'expiry_date' => 'required',
-            'cvv' => 'required',
-            'users_id' => 'required|exists:users,id',
-            'devise' => 'required|in:CDF,USD',
-        ]);
-
-        if ($validator->fails()) {
-            return [
-                'message' => implode(" ", $validator->errors()->all())
-            ];
-        }
         $data  = $validator->validated();
 
-        $montant = str_replace([' ', ','], ['', '.'],  request('montant'));
+        $data['password'] = Hash::make($data['password']);
+        $data['name'] = ucfirst($data['name']);
+        $data['user_role'] =  'user';
+        $user = User::create($data);
+        Auth::login($user, true);
 
-        if ($montant <= 0) {
-            return [
-                'message' =>   "Le montant de paiement $montant n'est pas valide."
-            ];
-        }
-
-        $devise = request('devise');
-        $chauffeur = User::find(request('users_id'));
-        $profil = $chauffeur->profils()->first();
-        abort_if($chauffeur->user_role != 'user', 403);
-        $ref = transid($chauffeur);
-        $mcdf = change($montant, $devise, 'CDF');
-        $musd = change($montant, $devise, 'USD');
-        $agent = auth()->user();
-
-        $payment_method = 'carte_bancaire';
-
-        $data1 = compact('payment_method', 'devise', 'montant');
-        $insertdata = [
-            'profil_id' => $profil->id,
-            'users_id' => $agent->id,
-            'agentname' => $agent->name,
-            'type' => $payment_method,
-            'montant_cdf' => $mcdf,
-            'montant_usd' => $musd,
-            'commission' => COMMISSION,
-            'devise_depot' => $devise,
-            'ref' => $ref,
-            'date' => nnow(),
+        return [
+            'success' => true,
+            'message' => 'Votre compte a été créé. Bienvenue.',
+            'token' => $user->createToken('token')->plainTextToken
         ];
-        $data1['insertdata'] = $insertdata;
-
-        $ed = request('expiry_date');
-        $ed = explode('/', explode(' ', $ed)[1]);
-        if (!is_numeric($ed[0]) or !is_numeric($ed[1])) {
-            return [
-                'message' =>   "La date d'expiration de la carte bancaire est invalide."
-            ];
-        }
-
-        $data = new \stdClass();
-        $data->montant = round($montant, 2);
-        $data->devise = strtoupper($devise);
-        $data->numcarte = request('card_number');
-        $data->mois_exp = $ed[0];
-        $data->annee_exp = $ed[1];
-        $data->cvv = request('cvv');
-        $data->description = "Paiement";
-        $data->data = $data1;
-        $data->ref = $ref;
-
-        $res = _3ds($data);
-
-        // 5123459999998221
-        // 01-30-123
-
-        if ($res->status == true) {
-            if (@$res->payNow == true) {
-                $r = _payWithNo3ds($res->pay_url, $res->pay_body, $res->headers);
-                if ($r->status == true) {
-                    $data1['api'] = $res;
-                    $pd = Pay::create([
-                        'data' => json_encode($data1),
-                        'ref' => $ref,
-                        'failed' => 0,
-                        'saved' => 1,
-                        'payment_method' => $payment_method,
-                        'date' => nnow(),
-                    ]);
-                    savedata($pd);
-                    return [
-                        'success' => true,
-                        'message' => $r->message
-                    ];
-                } else {
-                    return [
-                        'success' => false,
-                        'message' => $r->message
-                    ];
-                }
-            } else {
-                $data1['api'] = $res;
-                Pay::create([
-                    'data' => json_encode($data1),
-                    'ref' => $ref,
-                    'failed' => 0,
-                    'saved' => 0,
-                    'payment_method' => $payment_method,
-                    'date' => nnow(),
-                ]);
-                return [
-                    'success' => true,
-                    'message' => $res->message,
-                    'pay_url' => $res->pay_url,
-                ];
-            }
-        } else {
-            return [
-                'success' => false,
-                'message' => $res->message
-            ];
-        }
     }
 }

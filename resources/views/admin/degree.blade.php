@@ -70,7 +70,7 @@
                 <div class="modal-content modal-content-demo">
                     <div class="modal-header">
                         <h6 class="modal-title">Nouvelle promotion </h6><button aria-label="Close" class="btn-close"
-                            data-bs-dismiss="modal"></button>
+                            data-bs-dismiss="modal" type="button"></button>
                     </div>
                     <form action="#" id="f-add">
                         <div class="modal-body text-start">
@@ -101,7 +101,7 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button class="btn btn-light" data-bs-dismiss="modal">Fermer</button>
+                            <button class="btn btn-light" data-bs-dismiss="modal" type="button">Fermer</button>
                             <button class="btn btn-primary" type="submit"><span></span> Valider</button>
                         </div>
                     </form>
@@ -121,7 +121,7 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button class="btn btn-light btn-sm" data-bs-dismiss="modal">NON</button>
+                            <button class="btn btn-light btn-sm" data-bs-dismiss="modal" type="button">NON</button>
                             <button class="btn btn-primary btn-sm" type="submit"><span></span> OUI</button>
                         </div>
                     </form>

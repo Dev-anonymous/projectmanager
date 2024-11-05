@@ -31,6 +31,8 @@ use Laravel\Sanctum\HasApiTokens;
  *
  * @property FiliereHasPromotion|null $filiere_has_promotion
  * @property User|null $user
+ * @property Collection|Cart[] $carts
+ * @property Collection|Commande[] $commandes
  * @property Collection|Project[] $projects
  * @property Collection|Task[] $tasks
  * @property Collection|User[] $users
@@ -75,6 +77,16 @@ class User extends Authenticatable
     public function user()
     {
         return $this->belongsTo(User::class, 'users_id');
+    }
+
+    public function carts()
+    {
+        return $this->hasMany(Cart::class, 'users_id');
+    }
+
+    public function commandes()
+    {
+        return $this->hasMany(Commande::class, 'users_id');
     }
 
     public function projects()

@@ -46,6 +46,85 @@ class ProductAPIController extends Controller
         ];
     }
 
+    function products()
+    {
+        $start = microtime(true);
+        $categories = request('categories');
+        $filter = request('filter');
+        $q = request('q');
+        $q = explode(' ', $q);
+        $q = array_filter($q);
+
+        $articles = Product::with('category')->where('forsale', 1);
+        if ($categories) {
+            $articles->whereIn('category_id', explode(',', $categories));
+        }
+
+        if ('name' == $filter) {
+            $articles->orderBy('name');
+        } else if ('priceASC' == $filter) {
+            $articles->orderBy('price');
+        } else if ('priceDESC' == $filter) {
+            $articles->orderBy('price', 'desc');
+        } elseif ('date' == $filter) {
+            $articles->orderBy('updatedon', 'desc');
+        } else {
+            $articles->orderBy('id', 'desc');
+        }
+
+        if (count($q)) {
+            foreach ($q as $s) {
+                $s = trim($s);
+                $articles->Where(function ($query) use ($s) {
+                    $query->orWhere('name', 'like', "%$s%");
+                    $query->orWhere('description', 'like', "%$s%");
+                    $query->orWhere('price', 'like', "%$s%");
+                });
+            }
+        }
+
+        $articles = $articles->paginate(10);
+        $time = round(microtime(true) - $start, 3);
+
+        $tab = [];
+
+        foreach ($articles->getCollection() as $el) {
+            $o = (object)$el->toArray();
+            $img = $el->images;
+            $i = [];
+            if ($img) {
+                foreach ((array) @json_decode($img) as $p) {
+                    $i[] = asset('storage/' . $p);
+                }
+                $img =   @$i[0];
+            } else {
+                $img =   asset('/assets/images/faces/9.jpg');
+            }
+            $o->image = $img;
+            $o->images = $i;
+            $o->price = v($el->price, 'CDF');
+            $o->pricev = $el->price;
+            $tab[] = $o;
+        }
+        $data = $articles->toArray();
+        $data['data'] = $tab;
+        $txt = '';
+        if (count($q)) {
+            $i = $data['total'];
+            if ($i == 0) {
+                $q = implode(' ', $q);
+                $txt = "Aucun résultat trouvé pour : \"$q\".";
+            } else {
+                $txt = $i > 1 ? "$i articles trouvés." : "$i article trouvé.";
+                $txt .= " ($time s)";
+            }
+        }
+
+        $data['searchtext'] = $txt;
+
+        return $data;
+    }
+
     /**
      * Store a newly created resource in storage.
      *
@@ -86,6 +165,7 @@ class ProductAPIController extends Controller
 
         $data['forsale'] = request()->has('forsale');
         $data['name'] = ucfirst($data['name']);
+        $data['date'] = nnow();
         Product::create($data);
 
         return ['success' => true, 'message' => 'Article créé.'];
@@ -147,6 +227,7 @@ class ProductAPIController extends Controller
 
         $data['forsale'] = request()->has('forsale');
         $data['name'] = ucfirst($data['name']);
+        $data['updatedon'] = nnow();
         $product->update($data);
 
         return ['success' => true, 'message' => 'Article mis à jour.'];
