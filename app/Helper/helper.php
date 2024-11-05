@@ -1,5 +1,5 @@
 <?php
-$xApiKey = "MFE2R0s0cEZMZVh2Rm8zb0tZNjNMdz09";
+$xApiKey = "S2VsdWhpdXY5K3gva1V1eGI0Mi9QQT09";
 define('API_BASE', 'https://gopay.gooomart.com/api/v2');
 define('API_HEADEARS',  [
     "Accept: application/json",
