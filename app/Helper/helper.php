@@ -13,6 +13,7 @@ use App\Models\Commande;
 use App\Models\Config;
 use App\Models\Filiere;
 use App\Models\Pay;
+use App\Models\Product;
 use App\Models\Promotion;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
@@ -56,10 +57,6 @@ function defaultdata()
             Category::create(['category' => $el]);
         }
     }
-    // $faker = Faker\Factory::create();
-    // foreach(range(1, 10) as $el){
-    // $cat = Category::create(['category'=> $faker->name(15)]);
-    // }
 }
 
 function isvalidenumber($phone)
@@ -146,6 +143,14 @@ function saveData($trans)
         $insert = (array) $data->insertdata;
         Commande::create($insert);
         Cart::where('users_id', $insert['users_id'])->delete();
+        $art = json_decode($insert['articles']);
+        foreach ($art as $el) {
+            $p = Product::where('id', $el->id)->first();
+            if ($p) {
+                $st = $p->stock - $el->qty;
+                $p->update(['stock' => $st]);
+            }
+        }
         $trans->update(['saved' => 1, 'failed' => 0]);
     });
 }

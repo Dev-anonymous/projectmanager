@@ -7,6 +7,7 @@ use App\Models\Depot;
 use App\Models\Invoice;
 use App\Models\Pay;
 use App\Models\Pending;
+use App\Models\Product;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -68,6 +69,7 @@ class AppController extends Controller
 
         $amount = 0;
         $articles = [];
+        $error = [];
         foreach (auth()->user()->carts()->get() as $el) {
             $amount += $el->qty * $el->product->price;
             $articles[] = (object) [
@@ -76,6 +78,18 @@ class AppController extends Controller
                 'price' => $el->product->price,
                 'qty' => $el->qty,
                 'total' => v($el->qty * $el->product->price, 'CDF'),
+            ];
+            $prod = Product::where('id', $el->product_id)->first();
+            if ($el->qty > $prod->stock) {
+                $error[] = "$prod->stock \"$prod->name\" en stock<br/>";
+            }
+        }
+
+        if (count($error)) {
+            $m = "Il ne reste que : <br/>" . implode(' ', $error);
+            $m .= "Veuillez modifier la quantité dans votre panier.";
+            return [
+                'message' => $m
             ];
         }
 
@@ -108,7 +122,6 @@ class AppController extends Controller
             'saved' => 0,
             'date' => nnow(),
         ]);
-
 
         $pn = "243" . ((int) $phone);
         $rep = gopay_init_payment($amount, $devise, $pn, $myref);
