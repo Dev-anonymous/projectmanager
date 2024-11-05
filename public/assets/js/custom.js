@@ -252,7 +252,9 @@
                 html.setAttribute("style", "");
             }
             html.removeAttribute("data-bg-theme");
-            document.querySelector("#switcher-light-theme").checked = true;
+            try {
+                document.querySelector("#switcher-light-theme").checked = true;
+            } catch (error) {}
             document.querySelector("#switcher-menu-light").checked = true;
             document
                 .querySelector("html")
@@ -264,7 +266,9 @@
             html.style.removeProperty("--input-border");
             document.querySelector("#switcher-header-light").checked = true;
             document.querySelector("#switcher-menu-light").checked = true;
-            document.querySelector("#switcher-light-theme").checked = true;
+            try {
+                document.querySelector("#switcher-light-theme").checked = true;
+            } catch (error) {}
             document.querySelector("#switcher-background4").checked = false;
             document.querySelector("#switcher-background3").checked = false;
             document.querySelector("#switcher-background2").checked = false;
@@ -286,18 +290,24 @@
                 html.setAttribute("style", "");
             }
             html.setAttribute("data-menu-styles", "dark");
-            document.querySelector("#switcher-dark-theme").checked = true;
-            document.querySelector("#switcher-menu-dark").checked = true;
-            document.querySelector("#switcher-header-dark").checked = true;
-            checkOptions();
-            document.querySelector("#switcher-menu-dark").checked = true;
-            document.querySelector("#switcher-header-dark").checked = true;
-            document.querySelector("#switcher-dark-theme").checked = true;
-            document.querySelector("#switcher-background4").checked = false;
-            document.querySelector("#switcher-background3").checked = false;
-            document.querySelector("#switcher-background2").checked = false;
-            document.querySelector("#switcher-background1").checked = false;
-            document.querySelector("#switcher-background").checked = false;
+            try {
+                document.querySelector("#switcher-dark-theme").checked = true;
+                document.querySelector("#switcher-menu-dark").checked = true;
+                document.querySelector("#switcher-header-dark").checked = true;
+                checkOptions();
+            } catch (error) {}
+            try {
+                document.querySelector("#switcher-menu-dark").checked = true;
+                document.querySelector("#switcher-header-dark").checked = true;
+                document.querySelector("#switcher-dark-theme").checked = true;
+            } catch (error) {}
+            try {
+                document.querySelector("#switcher-background4").checked = false;
+                document.querySelector("#switcher-background3").checked = false;
+                document.querySelector("#switcher-background2").checked = false;
+                document.querySelector("#switcher-background1").checked = false;
+                document.querySelector("#switcher-background").checked = false;
+            } catch (error) {}
             localStorage.setItem("ynexdarktheme", "true");
             localStorage.setItem("ynexMenu", "dark");
             localStorage.setItem("ynexHeader", "dark");
@@ -306,11 +316,9 @@
         }
     }
     let layoutSetting = document.querySelector(".layout-setting");
-try {
-    layoutSetting.addEventListener("click", toggleTheme);
-} catch (error) {
-
-}
+    try {
+        layoutSetting.addEventListener("click", toggleTheme);
+    } catch (error) {}
     /* header theme toggle */
 
     /* Choices JS */

@@ -23,7 +23,9 @@
                 @if (!Route::is('home'))
                     <a aria-label="Hide Sidebar"
                         class="sidemenu-toggle header-link animated-arrow hor-toggle horizontal-navtoggle"
-                        data-bs-toggle="sidebar" href="javascript:void(0);"><span></span></a>
+                        data-bs-toggle="sidebar" href="javascript:void(0);">
+                        <span></span>
+                    </a>
                 @endif
             </div>
         </div>
