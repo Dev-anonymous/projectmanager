@@ -20,9 +20,12 @@ use Illuminate\Database\Eloquent\Model;
  * @property Carbon|null $enddate
  * @property int|null $status
  * @property string|null $description
+ * @property int|null $valide
+ * @property float|null $quote
  * 
  * @property Collection|Product[] $products
  * @property Collection|User[] $users
+ * @property Collection|Projectcriterion[] $projectcriteria
  * @property Collection|Task[] $tasks
  *
  * @package App\Models
@@ -36,7 +39,9 @@ class Project extends Model
 		'budget' => 'float',
 		'startdate' => 'datetime',
 		'enddate' => 'datetime',
-		'status' => 'int'
+		'status' => 'int',
+		'valide' => 'int',
+		'quote' => 'float'
 	];
 
 	protected $fillable = [
@@ -45,7 +50,9 @@ class Project extends Model
 		'startdate',
 		'enddate',
 		'status',
-		'description'
+		'description',
+		'valide',
+		'quote'
 	];
 
 	public function products()
@@ -56,6 +63,11 @@ class Project extends Model
 	public function users()
 	{
 		return $this->belongsToMany(User::class, 'project_has_users', 'project_id', 'users_id');
+	}
+
+	public function projectcriteria()
+	{
+		return $this->hasMany(Projectcriterion::class);
 	}
 
 	public function tasks()

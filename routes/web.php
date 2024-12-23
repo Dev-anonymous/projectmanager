@@ -49,6 +49,7 @@ Route::middleware('auth')->group(function () {
         Route::controller(AdminController::class)->group(function () {
             Route::get('',  'home')->name('admin.home');
             Route::get('projects',  'projects')->name('admin.projects');
+            Route::get('criteria',  'criteria')->name('admin.criteria');
             Route::get('admins',  'admins')->name('admin.admins');
             Route::get('students',  'students')->name('admin.students');
             Route::get('profile',  'profile')->name('admin.profile');

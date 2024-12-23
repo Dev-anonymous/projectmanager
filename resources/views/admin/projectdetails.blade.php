@@ -103,6 +103,36 @@
                             </div>
                         </div>
                         <div class="card custom-card">
+                            <div class="card-header justify-content-between">
+                                <div class="card-title">Critère de validation project</div>
+                                @php
+                                    $cri = $project->projectcriteria()->orderBy('criteria')->get();
+                                @endphp
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Critère</th>
+                                            <th>Cote /10</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($cri as $el)
+                                            <tr>
+                                                <td>{{ $el->criteria }}</td>
+                                                <td>{{ $el->quota ?? '-' }}</td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <th><b>TOTAL</b></th>
+                                            <th><b>{{ $project->quote ?? '-' }}</b></th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="card custom-card">
                             <div class="card-header d-flex justify-content-between">
                                 <div class="card-title">Taches</div>
                                 <div class="m-2">
@@ -190,8 +220,8 @@
                                 <textarea name="description" required rows="3" class="form-control form-control-sm  mb-2"></textarea>
                             </div>
                             <div class="col-xl-12">
-                                <label class="form-label text-default">Date début/Fin du
-                                    projet (*)</label>
+                                <label class="form-label text-default">Date début/Fin
+                                    (*)</label>
                                 <div class="input-group">
                                     <div class="input-group-text text-muted"> <i class="ri-calendar-line"></i> </div>
                                     <input type="text" class="form-control daterange" placeholder="Date">

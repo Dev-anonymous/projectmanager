@@ -14,6 +14,7 @@ use App\Models\Project;
 use App\Models\Promotion;
 use App\Models\Support;
 use App\Models\User;
+use App\Models\Validationcriterion;
 use Illuminate\Http\Request;
 use Shuchkin\SimpleXLSXGen;
 
@@ -86,13 +87,19 @@ class AdminController extends Controller
             $students = $pro->users()->orderBy('name')->get();
             return view('admin.projectdetails', compact('students', 'project', 'category'));
         }
+        $criteria = Validationcriterion::orderBy('criteria')->get();
 
-        return view('admin.projects', compact('students', 'project', 'category'));
+        return view('admin.projects', compact('students', 'project', 'category', 'criteria'));
     }
 
     function order()
     {
         $order =  Commande::orderBy('id', 'desc')->get();
         return view('admin.order', compact('order'));
+    }
+
+    function criteria()
+    {
+        return view('admin.criteria');
     }
 }

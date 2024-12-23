@@ -16,6 +16,7 @@ use App\Models\Pay;
 use App\Models\Product;
 use App\Models\Promotion;
 use App\Models\User;
+use App\Models\Validationcriterion;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Twilio\Rest\Client;
@@ -55,6 +56,13 @@ function defaultdata()
     if (!$c) {
         foreach (['Categorie 1'] as $el) {
             Category::create(['category' => $el]);
+        }
+    }
+
+    $pr = Validationcriterion::first();
+    if (!$pr) {
+        foreach (['Innovant', 'Rentable', 'Durabilité', 'Impact', 'Efficience', 'Efficacité', 'Cohérence', 'Pertinence', 'conformité'] as $el) {
+            Validationcriterion::create(['criteria' => $el]);
         }
     }
 }

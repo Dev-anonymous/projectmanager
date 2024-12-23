@@ -5,7 +5,9 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\Project;
+use App\Models\Projectcriterion;
 use App\Models\ProjectHasUser;
+use App\Models\Validationcriterion;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -19,7 +21,7 @@ class ProjectAPIController extends Controller
      */
     public function index()
     {
-        $t = Project::orderBy('status')->orderBy('id', 'desc')->get();
+        $t = Project::orderBy('status')->with('projectcriteria')->orderBy('id', 'desc')->get();
         $user = auth()->user();
         if ($user->user_role == 'student') {
             $t = $user->projects()->orderBy('status')->orderBy('id', 'desc')->get();
@@ -66,6 +68,8 @@ class ProjectAPIController extends Controller
             'description' => 'sometimes',
             'users_id' => 'sometimes|array',
             'users_id.*' => 'exists:users,id',
+            'criteria' => 'required|array',
+            'criteria.*' => 'exists:validationcriteria,id',
         ];
 
         $validator = Validator::make(request()->all(), $rules);
@@ -92,6 +96,13 @@ class ProjectAPIController extends Controller
 
         foreach ((array) request('users_id') as $el) {
             ProjectHasUser::create(['users_id' => $el, 'project_id' => $project->id]);
+        }
+
+        $cri = Validationcriterion::whereIn('id', (array) request('criteria'))->orderBy('criteria')->get();
+        foreach ($cri as $el) {
+            if (!Projectcriterion::where(['criteria' => $el->criteria, 'project_id' => $project->id])->first()) {
+                Projectcriterion::create(['criteria' => $el->criteria, 'project_id' => $project->id]);
+            }
         }
         DB::commit();
 

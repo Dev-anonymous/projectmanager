@@ -3,12 +3,14 @@
 use App\Http\Controllers\API\CartAPIController;
 use App\Http\Controllers\API\CategoryAPIController;
 use App\Http\Controllers\API\ConfigAPIController;
+use App\Http\Controllers\API\CriteriaAPIController;
 use App\Http\Controllers\API\DashAPIController;
 use App\Http\Controllers\API\DepotAPIController;
 use App\Http\Controllers\API\ExportAPIController;
 use App\Http\Controllers\API\FacultAPIController;
 use App\Http\Controllers\API\ProductAPIController;
 use App\Http\Controllers\API\ProjectAPIController;
+use App\Http\Controllers\API\ProjectCritriaAPIController;
 use App\Http\Controllers\API\TaskAPIController;
 use App\Http\Controllers\API\TauxAPIController;
 use App\Http\Controllers\API\UserAPIController;
@@ -30,11 +32,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('project/{project}', [ProjectAPIController::class, 'update']);
     Route::resource('task', TaskAPIController::class);
     Route::resource('cart', CartAPIController::class)->only(['index', 'store', 'destroy']);
+    Route::resource('criteria', CriteriaAPIController::class);
+    Route::resource('projectcriteria', ProjectCritriaAPIController::class)->only(['store']);
 
     Route::post('fpi', [AppController::class, 'fpi'])->name('fpi');
     Route::get('fpc', [AppController::class, 'fpc'])->name('fpc');
-
-
 });
 
 Route::get('products', [ProductAPIController::class, 'products'])->name('productlist');

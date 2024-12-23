@@ -43,7 +43,6 @@
                                 <a href="{{ route('admin.projects') }}"
                                     class="side-menu__item @if (Route::is('admin.projects')) active @endif">Projets</a>
                             </li>
-
                         </ul>
                     </li>
                     <li class="slide__category"><span class="category-name">Product</span></li>
@@ -112,6 +111,7 @@
                     <li class="slide__category"><span class="category-name">Settings</span></li>
                     <li class="slide has-sub @if (Route::is('admin.settings') or
                             Route::is('admin.profile') or
+                            Route::is('admin.criteria') or
                             Route::is('admin.category') or
                             Route::is('admin.degree')) active open @endif">
                         <a href="javascript:void(0);" class="side-menu__item">
@@ -130,6 +130,10 @@
                             <li class="slide">
                                 <a href="{{ route('admin.profile') }}"
                                     class="side-menu__item @if (Route::is('admin.profile')) active @endif">Profil</a>
+                            </li>
+                            <li class="slide">
+                                <a href="{{ route('admin.criteria') }}"
+                                    class="side-menu__item @if (Route::is('admin.criteria')) active @endif">Critère validation</a>
                             </li>
                         </ul>
                     </li>
